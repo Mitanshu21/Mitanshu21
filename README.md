@@ -1,6 +1,5 @@
 
 <h1 align="center">Hi 👋, I'm Mitanshu Patel</h1>
-<h3 align="center">A computer science student expecting to graduate in 2022.</h3>
 
 
 <h3 align="left">Languages and Tools:</h3>

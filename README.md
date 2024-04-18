@@ -26,7 +26,7 @@
 <p align="center">
   <a href="https://github.com/mitanshu21"><img src="https://img.shields.io/github/followers/mitanshu21.svg?label=GitHub&style=social" alt="GitHub"></a>
   <a href="https://twitter.com/mitanshu21"><img src="https://img.shields.io/twitter/follow/mitanshu21.svg?style=social" alt="Twitter"></a>
-  <a href="https://www.linkedin.com/in/patel-mitanshu"><img src="https://img.shields.io/badge/-LinkedIn-0077B5?logo=linkedin&logoColor=white&style=flat-square" alt="LinkedIn"></a>
+  <a href="https://www.linkedin.com/in/mitanshu-patel/"><img src="https://img.shields.io/badge/-LinkedIn-0077B5?logo=linkedin&logoColor=white&style=flat-square" alt="LinkedIn"></a>
   <a href="https://www.instagram.com/__mitanshu/"><img src="https://img.shields.io/badge/Instagram-E4405F?logo=instagram&logoColor=white" alt="instagram"></a>
   <a href="https://mitanshu.xyz/"><img src="https://img.shields.io/badge/mitanshu-.live-lightgrey" alt="Portfolio"></a>
 </p>

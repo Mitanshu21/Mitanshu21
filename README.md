@@ -1,7 +1,7 @@
 <!-- Intro -->
 <h1 align="center">Hi there, I'm Mitanshu Patel</h1>
 <p align="center">
-  <strong>Full Stack Developer</strong> with experience in <strong>React.js, Node.js, Python, and MongoDB</strong>.
+  <strong>Full Stack Developer</strong> with experience in <strong>React.js, Node.js, Svelte, Python, and MongoDB</strong>.
 </p>
 
 <!-- Technology Badges -->

@@ -1,117 +1,119 @@
 <script lang="ts">
 	import { profile } from '$lib/data';
-	import { reveal } from '$lib/actions/reveal';
+	import { rise } from '$lib/actions/rise';
 
 	let copied = $state(false);
 
-	async function copyEmail() {
+	async function copyEmail(e: MouseEvent) {
+		// left-click copies; the anchor still carries the real mailto for
+		// right-click / long-press / keyboard.
+		e.preventDefault();
 		try {
 			await navigator.clipboard.writeText(profile.email);
 			copied = true;
 			setTimeout(() => (copied = false), 2000);
 		} catch {
-			// Clipboard unavailable — the mailto link still works.
+			location.href = `mailto:${profile.email}`;
 		}
 	}
 </script>
 
-<section class="section" id="contact">
-	<div class="container">
-		<p class="section-label" use:reveal>04 — Contact</p>
+<section class="rule-top" id="contact" data-numeral data-section="05 / 05 — CONTACT">
+	<span class="numeral right" aria-hidden="true">05</span>
+	<h2 class="sr-only">Contact</h2>
 
-		<div class="inner" use:reveal>
-			<h2 class="section-title">Let’s build something.</h2>
-			<p class="blurb">
-				Whether it’s a role, a project or just an idea worth talking about — my inbox is open.
+	<div class="inner">
+		<p class="kicker v-mono" use:rise>HAVE SOMETHING THAT NEEDS TO FEEL INSTANT?</p>
+
+		<a
+			class="email v-display"
+			use:rise={{ delay: 80 }}
+			class:copied
+			href="mailto:{profile.email}"
+			onclick={copyEmail}
+			aria-live="polite"
+		>
+			{copied ? 'COPIED — NOW WRITE ME.' : profile.email.toUpperCase()}
+		</a>
+
+		<div class="table" use:rise={{ delay: 150 }}>
+			<p class="row v-mono">
+				<span>GITHUB</span>
+				<a href={profile.github} target="_blank" rel="noopener noreferrer"
+					>{profile.githubHandle} ↗</a
+				>
 			</p>
-
-			<div class="row">
-				<a class="email" href="mailto:{profile.email}">{profile.email}</a>
-				<button onclick={copyEmail} class:copied aria-label="Copy email address">
-					{copied ? 'Copied ✓' : 'Copy'}
-				</button>
-			</div>
-
-			<div class="socials">
-				<a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-				{#if profile.linkedin}
-					<a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
-				{/if}
-			</div>
+			{#if profile.linkedin}
+				<p class="row v-mono">
+					<span>LINKEDIN</span>
+					<a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LINKEDIN ↗</a>
+				</p>
+			{/if}
+			<p class="row v-mono">
+				<span>TERMINAL</span>
+				<span>TRY `SUDO HIRE MITANSHU`</span>
+			</p>
 		</div>
 	</div>
 </section>
 
 <style>
+	section {
+		min-height: 70svh;
+		display: grid;
+		align-content: center;
+		padding-block: clamp(6rem, 14vh, 12rem);
+	}
+
 	.inner {
-		text-align: center;
-		padding: 2rem 0;
+		position: relative;
+		z-index: 1;
+		padding-inline: 2vw;
 	}
 
-	.blurb {
-		color: var(--muted);
-		max-width: 46ch;
-		margin: 0 auto 2.5rem;
-	}
-
-	.row {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.75rem;
-		flex-wrap: wrap;
+	.kicker {
 		margin-bottom: 2rem;
 	}
 
 	.email {
-		font-family: var(--font-display);
-		font-size: clamp(1.1rem, 3vw, 1.6rem);
-		font-weight: 600;
-		letter-spacing: -0.01em;
-		border-bottom: 1px solid var(--line-strong);
-		padding-bottom: 2px;
+		display: inline-block;
+		font-size: clamp(21px, 5.2vw, 105px);
+		border-bottom: 4px solid var(--ink);
+		padding-bottom: 0.05em;
 		transition:
-			color 0.2s ease,
-			border-color 0.2s ease;
+			background 0.25s ease,
+			color 0.15s ease;
 	}
 
 	.email:hover {
-		color: var(--accent);
-		border-color: var(--accent);
+		color: var(--signal);
+		border-color: var(--signal);
 	}
 
-	button {
-		font-family: var(--font-mono);
-		font-size: 0.72rem;
-		letter-spacing: 0.08em;
-		color: var(--muted);
-		border: 1px solid var(--line);
-		border-radius: 99px;
-		padding: 0.35rem 0.9rem;
-		transition:
-			color 0.2s ease,
-			border-color 0.2s ease;
+	.email.copied {
+		background: var(--signal);
+		color: var(--ink);
+		border-color: var(--ink);
 	}
 
-	button:hover,
-	button.copied {
-		color: var(--accent);
-		border-color: var(--accent);
+	.table {
+		margin-top: 4rem;
+		max-width: 660px;
 	}
 
-	.socials {
+	.row {
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
 		gap: 2rem;
+		border-top: 1px solid var(--ink);
+		padding-block: 0.5rem;
 	}
 
-	.socials a {
-		font-size: 0.88rem;
-		color: var(--muted);
-		transition: color 0.2s ease;
+	.row:last-child {
+		border-bottom: 1px solid var(--ink);
 	}
 
-	.socials a:hover {
-		color: var(--accent);
+	.row a:hover {
+		color: var(--signal);
 	}
 </style>

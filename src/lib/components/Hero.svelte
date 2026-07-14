@@ -1,212 +1,369 @@
 <script lang="ts">
-	import { profile } from '$lib/data';
-	import { base } from '$app/paths';
+	import { profile, marqueeText } from '$lib/data';
+	import { ui } from '$lib/ui.svelte';
+	import { physicsBody, onHeadlineGrab } from '$lib/actions/physics';
+	import { magnetic } from '$lib/actions/magnetic';
+	import Marquee from './Marquee.svelte';
+
+	// Prerendered fallback copy is replaced by the real on-device measurement.
+	let loadedLine = $state('LOADED IN 0.2S — PRERENDERED, NOTHING TO WAIT FOR.');
+	let jsLine = $state('LESS JS THAN A COOKIE BANNER.');
+	let hint = $state('↖ THE NAME IS GRABBABLE. THROW IT.');
+	// masks clip the intro rise, then release so thrown letters aren't chopped
+	let played = $state(false);
+
+	$effect(() => {
+		const t = setTimeout(() => (played = true), 900);
+		return () => clearTimeout(t);
+	});
+
+	const LINE1 = 'MITAN—';
+	const LINE2A = 'SHU';
+	const LINE2B = 'PATEL';
+
+	// the headline talks back as you rough it up
+	onHeadlineGrab((n) => {
+		if (n === 4) hint = 'CAREFUL — I KERNED THAT BY HAND.';
+		else if (n === 8) {
+			hint = 'FINE. YOU WIN. NOW TRY ⌘K.';
+			console.log('%c[physics] visitor reclassified as: chaos agent', 'color:#ff4d00');
+		}
+	});
+
+	$effect(() => {
+		// Any interaction during the intro jumps straight to the end state.
+		const skip = () => document.documentElement.classList.add('skip-intro');
+		const opts = { once: true, passive: true };
+		window.addEventListener('keydown', skip, opts);
+		window.addEventListener('pointerdown', skip, opts);
+		window.addEventListener('wheel', skip, opts);
+
+		// Measure at first frame after hydration — on the visitor's device.
+		requestAnimationFrame(() => {
+			const s = performance.now() / 1000;
+			if (s > 0 && s < 30) {
+				loadedLine = `LOADED IN ${s.toFixed(2)}S — MEASURED ON YOUR DEVICE, NOT CLAIMED.`;
+				jsLine = s > 1 ? 'STILL LESS JS THAN A COOKIE BANNER.' : 'LESS JS THAN A COOKIE BANNER.';
+			}
+		});
+
+		return () => {
+			window.removeEventListener('keydown', skip);
+			window.removeEventListener('pointerdown', skip);
+			window.removeEventListener('wheel', skip);
+		};
+	});
 </script>
 
-<section class="hero" id="top">
-	<div class="grid-bg" aria-hidden="true"></div>
-	<div class="glow" aria-hidden="true"></div>
+<section class="hero" id="top" class:played data-section="01 / 05 — INDEX">
+	<header class="masthead rule-row">
+		<p class="v-mono-s">{profile.name.toUpperCase()} — PORTFOLIO, EST. {profile.est}</p>
+		<div class="masthead-right v-mono-s">
+			<a href="mailto:{profile.email}">{profile.email.toUpperCase()}</a>
+			<button onclick={() => (ui.index = true)}>INDEX</button>
+			<button class="chip" onclick={() => (ui.terminal = true)} use:magnetic aria-label="Open terminal">
+				⌘K
+			</button>
+		</div>
+	</header>
 
-	<div class="container">
-		{#if profile.available}
-			<p class="status anim" style="--i: 0">
-				<span class="dot" aria-hidden="true"></span>
-				{profile.availabilityNote}
-			</p>
-		{/if}
+	<div class="name-zone">
+		<h1 aria-label="{profile.name} — {profile.role}">
+			<span class="mask"
+				><span class="line l1" aria-hidden="true"
+					>{#each LINE1.split('') as ch, i (i)}<b use:physicsBody>{ch}</b>{/each}</span
+				></span
+			>
+			<span class="mask"
+				><span class="line l2" aria-hidden="true"
+					><i class="block" use:physicsBody></i>{#each LINE2A.split('') as ch, i (i)}<b
+							use:physicsBody>{ch}</b
+						>{/each}<span class="sp"></span>{#each LINE2B.split('') as ch, i (i)}<b
+							class="outlined"
+							use:physicsBody>{ch}</b
+						>{/each}</span
+				></span
+			>
+		</h1>
 
-		<p class="kicker anim" style="--i: 1">
-			{profile.name} · {profile.role}
+		<aside class="meta v-mono">
+			<div class="row"><span>ROLE</span><span>FULL-STACK DEVELOPER</span></div>
+			<div class="row"><span>STACK</span><span>SVELTE · REACT · NODE · PYTHON</span></div>
+			<div class="row">
+				<span>STATUS</span><span><i class="dot" aria-hidden="true"></i> OPEN TO WORK</span>
+			</div>
+			<div class="row">
+				<span>TERMINAL</span><span><span class="fine">PRESS ⌘K</span><span class="coarse"
+						>TAP ⌘K, BOTTOM RIGHT</span
+					></span>
+			</div>
+			<p class="drag-hint">{hint}</p>
+		</aside>
+
+		<p class="receipt v-mono-s">
+			{loadedLine}<br />{jsLine}
 		</p>
 
-		<h1 class="anim" style="--i: 2">{profile.tagline}</h1>
-
-		<p class="intro anim" style="--i: 3">{profile.intro}</p>
-
-		<div class="actions anim" style="--i: 4">
-			<a class="btn primary" href="#work">Selected work</a>
-			<a class="btn" href="mailto:{profile.email}">Get in touch</a>
-			{#if profile.resume}
-				<a class="btn" href="{base}/{profile.resume}" target="_blank" rel="noopener">Resume</a>
-			{/if}
-		</div>
+		<p class="scroll-cue v-mono-s" aria-hidden="true">SCROLL ↓</p>
 	</div>
 
-	<a class="scroll-hint" href="#about" aria-label="Scroll to about section">
-		<span></span>
-	</a>
+	<div class="strip rule-top">
+		<Marquee text={marqueeText.toUpperCase()} alternate />
+	</div>
 </section>
 
 <style>
 	.hero {
-		position: relative;
 		min-height: 100svh;
+		display: grid;
+		/* minmax(0,1fr): the marquee's max-content width must not
+		   inflate the grid — it once stretched the hero to 10,000px+ */
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-rows: auto 1fr auto;
+		overflow: clip;
+	}
+
+	/* ── masthead ── */
+	.masthead {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.9rem 2vw;
+		border-bottom: 1px solid var(--ink);
+		gap: 1rem;
+	}
+
+	.masthead-right {
 		display: flex;
 		align-items: center;
-		overflow: hidden;
 	}
 
-	/* Faint blueprint grid, fading toward the bottom */
-	.grid-bg {
-		position: absolute;
-		inset: 0;
-		background-image:
-			linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-		background-size: 56px 56px;
-		mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 30%, transparent 75%);
-		-webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 20%, black 30%, transparent 75%);
+	.masthead-right > * {
+		padding-inline: 1rem;
+		border-left: 1px solid var(--ink);
 	}
 
-	.glow {
-		position: absolute;
-		top: -25%;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 70vw;
-		height: 60vh;
-		background: radial-gradient(ellipse at center, rgba(94, 234, 212, 0.09), transparent 65%);
-		filter: blur(40px);
-		pointer-events: none;
+	.masthead-right > :first-child {
+		border-left: 0;
 	}
 
-	.container {
+	.masthead-right a:hover,
+	.masthead-right button:hover {
+		color: var(--signal);
+	}
+
+	.chip {
+		border: 1px solid var(--ink) !important;
+		border-radius: 2px;
+		padding: 0.2rem 0.6rem !important;
+		margin-left: 1rem;
+	}
+
+	/* ── name zone ── */
+	.name-zone {
 		position: relative;
-		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding: 4rem 2vw 5rem;
 	}
 
-	.status {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-family: var(--font-mono);
-		font-size: 0.75rem;
-		letter-spacing: 0.08em;
-		color: var(--muted);
-		border: 1px solid var(--line);
-		border-radius: 99px;
-		padding: 0.35rem 0.9rem;
-		margin-bottom: 2rem;
-		background: rgba(255, 255, 255, 0.02);
+	h1 {
+		font-variation-settings: 'wght' 850, 'wdth' 125;
+		text-transform: uppercase;
+		font-size: clamp(44px, 12.5vw, 230px);
+		line-height: 0.86;
+		letter-spacing: -0.03em;
+	}
+
+	.mask {
+		display: block;
+		overflow: clip;
+	}
+
+	.played .mask,
+	:global(html.skip-intro) .mask {
+		overflow: visible;
+	}
+
+	/* Intro choreography is pure CSS — it starts at first paint, runs with
+	   JS disabled, and html.skip-intro (inline head script / interaction)
+	   cuts straight to the end state. */
+	.line {
+		display: block;
+		animation: line-rise 0.6s var(--ease-expo) both;
+		animation-delay: 80ms;
+	}
+
+	.mask:nth-child(2) .line {
+		animation-delay: 160ms;
+	}
+
+	@keyframes line-rise {
+		from {
+			transform: translateY(110%);
+		}
+	}
+
+	:global(html.skip-intro) .line {
+		animation: none;
+	}
+
+	.l2 {
+		padding-left: 0.55em; /* the staircase */
+		position: relative;
+	}
+
+	b,
+	.line i.block {
+		display: inline-block;
+		font-style: normal;
+		font-weight: inherit;
+	}
+
+	b.outlined {
+		-webkit-text-stroke-color: var(--ink);
+	}
+
+	.sp {
+		display: inline-block;
+		width: 0.18em;
+	}
+
+	.block {
+		position: absolute;
+		left: 0.3em;
+		top: -0.08em;
+		width: 14vw;
+		height: 0.8em;
+		background: var(--signal);
+		z-index: -1;
+		transform-origin: bottom;
+		animation: block-in 0.5s var(--ease-expo) 160ms both;
+	}
+
+	@keyframes block-in {
+		from {
+			scale: 1 0;
+		}
+	}
+
+	:global(html.skip-intro) .block {
+		animation: none;
+	}
+
+	/* ── meta block ── */
+	.meta {
+		position: absolute;
+		top: 1.5rem;
+		right: 2vw;
+		min-width: min(340px, 40vw);
+		animation: meta-in 0.2s ease 0.4s both;
+	}
+
+	@keyframes meta-in {
+		from {
+			opacity: 0;
+		}
+	}
+
+	:global(html.skip-intro) .meta {
+		animation: none;
+	}
+
+	.meta .row {
+		display: flex;
+		justify-content: space-between;
+		gap: 2rem;
+		border-top: 1px solid var(--ink);
+		padding-block: 0.35rem;
+	}
+
+	.meta .row:last-of-type {
+		border-bottom: 1px solid var(--ink);
+	}
+
+	.coarse {
+		display: none;
+	}
+
+	@media (pointer: coarse) {
+		.fine {
+			display: none;
+		}
+		.coarse {
+			display: inline;
+		}
 	}
 
 	.dot {
-		width: 7px;
-		height: 7px;
+		display: inline-block;
+		width: 8px;
+		height: 8px;
 		border-radius: 50%;
-		background: var(--accent);
-		box-shadow: 0 0 8px var(--accent);
-		animation: pulse 2.4s ease-in-out infinite;
+		background: var(--signal);
+		animation: pulse 2s ease-in-out infinite;
 	}
 
 	@keyframes pulse {
 		50% {
-			opacity: 0.4;
+			opacity: 0.35;
 		}
 	}
 
-	.kicker {
+	.drag-hint {
+		margin-top: 0.75rem;
 		font-family: var(--font-mono);
-		font-size: 0.8rem;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
-		color: var(--accent);
-		margin-bottom: 1.25rem;
+		font-size: 11px;
+		letter-spacing: 0.05em;
+		color: var(--signal);
 	}
 
-	h1 {
-		font-size: clamp(2.4rem, 6.5vw, 4.6rem);
-		max-width: 16ch;
-		margin-bottom: 1.75rem;
-	}
-
-	.intro {
-		max-width: 54ch;
-		color: var(--muted);
-		font-size: clamp(1rem, 1.6vw, 1.15rem);
-		margin-bottom: 2.75rem;
-	}
-
-	.actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-	}
-
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.75rem 1.5rem;
-		border: 1px solid var(--line-strong);
-		border-radius: 8px;
-		font-size: 0.9rem;
-		font-weight: 500;
-		transition:
-			border-color 0.2s ease,
-			background 0.2s ease,
-			transform 0.2s var(--ease-out);
-	}
-
-	.btn:hover {
-		border-color: var(--accent);
-		transform: translateY(-2px);
-	}
-
-	.btn.primary {
-		background: var(--accent);
-		border-color: var(--accent);
-		color: var(--bg);
-	}
-
-	.btn.primary:hover {
-		box-shadow: 0 0 24px rgba(94, 234, 212, 0.35);
-	}
-
-	.scroll-hint {
+	/* ── receipt + cue ── */
+	.receipt {
 		position: absolute;
-		bottom: 2rem;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 22px;
-		height: 36px;
-		border: 1px solid var(--line-strong);
-		border-radius: 11px;
-		display: flex;
-		justify-content: center;
-		padding-top: 7px;
+		bottom: 1.25rem;
+		left: 2vw;
+		background: var(--paper);
+		padding: 0.35rem 0.6rem 0.35rem 0;
+		z-index: 1;
 	}
 
-	.scroll-hint span {
-		width: 3px;
-		height: 7px;
-		border-radius: 2px;
-		background: var(--accent);
-		animation: drift 2s ease-in-out infinite;
+	.scroll-cue {
+		position: absolute;
+		bottom: 3.5rem;
+		right: 1rem;
+		writing-mode: vertical-rl;
 	}
 
-	@keyframes drift {
-		50% {
-			transform: translateY(8px);
-			opacity: 0.3;
+	/* ── marquee strip ── */
+	.strip {
+		border-bottom: 1px solid var(--ink);
+	}
+
+	@media (max-width: 768px) {
+		.masthead {
+			flex-wrap: wrap;
+			row-gap: 0.4rem;
 		}
-	}
 
-	/* Staggered entrance */
-	.anim {
-		animation: rise 0.8s var(--ease-out) both;
-		animation-delay: calc(var(--i) * 110ms);
-	}
-
-	@keyframes rise {
-		from {
-			opacity: 0;
-			transform: translateY(26px);
+		.meta {
+			position: static;
+			min-width: 0;
+			margin-top: 2.5rem;
 		}
-	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.anim {
-			animation: none;
+		.name-zone {
+			padding-top: 2.5rem;
+			padding-bottom: 6rem;
+		}
+
+		.block {
+			width: 22vw;
+		}
+
+		.scroll-cue {
+			display: none;
 		}
 	}
 </style>

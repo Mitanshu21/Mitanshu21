@@ -1,99 +1,120 @@
 <script lang="ts">
 	import { experience } from '$lib/data';
-	import { reveal } from '$lib/actions/reveal';
+	import { rise } from '$lib/actions/rise';
 </script>
 
-<section class="section" id="experience">
-	<div class="container">
-		<p class="section-label" use:reveal>02 — Experience</p>
+<section class="rule-top" id="experience" data-numeral data-section="03 / 05 — EXPERIENCE">
+	<span class="numeral right" aria-hidden="true">03</span>
+	<h2 class="sr-only">Experience</h2>
 
-		<ol>
-			{#each experience as job, i (job.company + job.period)}
-				<li use:reveal={{ delay: i * 100 }}>
-					<div class="period">{job.period}</div>
-					<div>
-						<h3>{job.role} <span class="at">·</span> {job.company}</h3>
-						<p>{job.summary}</p>
-						<ul class="tags">
-							{#each job.highlights as tag (tag)}
-								<li>{tag}</li>
-							{/each}
-						</ul>
-					</div>
-				</li>
-			{/each}
-		</ol>
-	</div>
+	{#each experience as job (job.company + job.period)}
+		<article class="row rule-top broadsheet" use:rise>
+			<p class="period v-mono-s">{job.period.toUpperCase()}</p>
+			<div class="role-cell">
+				<h3 class="v-display">
+					{job.role.toUpperCase()} — <span class="outlined">{job.company.toUpperCase()}</span>
+				</h3>
+				<p class="highlights v-mono-s">{job.highlights.join(' / ').toUpperCase()}</p>
+			</div>
+			<div class="side">
+				<p class="v-body summary">{job.summary}</p>
+				<p class="status v-mono-s" class:running={job.current}>
+					{#if job.current}<i class="dot" aria-hidden="true"></i> RUNNING{:else}EXITED 0{/if}
+				</p>
+			</div>
+		</article>
+	{/each}
 </section>
 
 <style>
-	ol {
-		list-style: none;
-		display: flex;
-		flex-direction: column;
+	section {
+		padding-top: clamp(6rem, 14vh, 12rem);
 	}
 
-	ol > li {
-		display: grid;
-		grid-template-columns: 180px 1fr;
-		gap: 1.5rem;
-		padding: 2rem 0;
-		border-bottom: 1px solid var(--line);
+	.row {
+		grid-template-rows: auto;
+		align-items: start;
+		padding-block: 2.5rem;
+		position: relative;
+		z-index: 1;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease;
 	}
 
-	ol > li:first-child {
-		padding-top: 0;
+	.row:hover {
+		background: var(--ink);
+		color: var(--paper);
 	}
 
-	ol > li:last-child {
-		border-bottom: none;
+	.row:hover .outlined {
+		-webkit-text-stroke-color: var(--paper);
 	}
 
 	.period {
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		letter-spacing: 0.05em;
-		color: var(--faint);
-		padding-top: 0.35rem;
+		grid-column: 1 / 3;
+		padding-top: 0.5rem;
+	}
+
+	.role-cell {
+		grid-column: 3 / 10;
 	}
 
 	h3 {
-		font-size: 1.15rem;
-		margin-bottom: 0.5rem;
+		font-size: clamp(32px, 5vw, 88px);
 	}
 
-	.at {
-		color: var(--accent);
+	.highlights {
+		margin-top: 1rem;
+		opacity: 0.7;
 	}
 
-	p {
-		color: var(--muted);
-		max-width: 60ch;
-		margin-bottom: 0.9rem;
-	}
-
-	.tags {
-		list-style: none;
+	.side {
+		grid-column: 10 / 13;
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
-	.tags li {
-		font-family: var(--font-mono);
-		font-size: 0.7rem;
-		letter-spacing: 0.05em;
-		color: var(--muted);
-		border: 1px solid var(--line);
-		border-radius: 99px;
-		padding: 0.2rem 0.7rem;
-		background: rgba(255, 255, 255, 0.02);
+	.summary {
+		font-size: 14px;
 	}
 
-	@media (max-width: 640px) {
-		ol > li {
-			grid-template-columns: 1fr;
-			gap: 0.5rem;
+	.status {
+		text-align: right;
+		opacity: 0.45;
+	}
+
+	.status.running {
+		opacity: 1;
+	}
+
+	.dot {
+		display: inline-block;
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--signal);
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		50% {
+			opacity: 0.35;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.period,
+		.role-cell,
+		.side {
+			grid-column: 1 / -1;
+		}
+		.side {
+			margin-top: 1rem;
+		}
+		.status {
+			text-align: left;
 		}
 	}
 </style>

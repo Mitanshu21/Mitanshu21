@@ -2,21 +2,24 @@
 // All site content lives here. Edit this file — nothing else —
 // to change what the portfolio says.
 // ─────────────────────────────────────────────────────────────
+import stars from './stars.json';
 
 export const profile = {
 	name: 'Mitanshu Patel',
-	role: 'Full Stack Developer',
-	tagline: 'Building fast, minimal software for the modern web.',
+	role: 'Full-Stack Developer',
+	est: 2021,
+	tagline: 'Software that feels instant.',
 	intro:
-		'I’m Mitanshu — a full-stack developer working across Svelte, React, Node.js and Python. I care about performance, clean architecture and interfaces that feel effortless.',
+		'I’m Mitanshu — a full-stack developer shipping end-to-end products in Svelte, React, Node.js and Python. I obsess over the milliseconds: this page carries less JavaScript than most cookie banners.',
 	email: 'mitanshu@indidino.com',
 	github: 'https://github.com/Mitanshu21',
+	githubHandle: 'GITHUB.COM/MITANSHU21',
 	// Add your LinkedIn URL to show the link, e.g. 'https://linkedin.com/in/...'
 	linkedin: '',
-	// Drop resume.pdf into /static and set this to 'resume.pdf' to show the button
+	// Drop resume.pdf into /static and set this to 'resume.pdf' to show the link
 	resume: '',
 	available: true,
-	availabilityNote: 'Open to new opportunities'
+	availabilityNote: 'Open to work'
 };
 
 export const about = {
@@ -25,90 +28,90 @@ export const about = {
 		'Lately I’ve been deep in the Svelte ecosystem for its speed and simplicity, while shipping production work in React and Node. I like small bundles, fast first paints and code that the next developer can actually read.'
 	],
 	skills: [
-		{ group: 'Frontend', items: ['Svelte / SvelteKit', 'React', 'Next.js', 'TypeScript', 'Redux'] },
-		{ group: 'Backend', items: ['Node.js', 'Express', 'Django', 'Python'] },
-		{ group: 'Data & Infra', items: ['MongoDB', 'MySQL', 'Firebase', 'AWS S3', 'Strapi'] },
+		{ group: 'Frontend', items: ['Svelte — SvelteKit', 'React', 'Next.js', 'TypeScript', 'Redux'] },
+		{ group: 'Backend', items: ['Node — Express', 'Django', 'Python'] },
+		{ group: 'Data', items: ['MongoDB', 'MySQL', 'Firebase', 'AWS S3', 'Strapi'] },
 		{ group: 'Design', items: ['Figma', 'Design systems'] }
 	]
 };
 
-// TODO(Mitanshu): replace with your real work history — titles, companies and dates below are placeholders.
+// TODO(Mitanshu): confirm the dates. Only real employment renders here —
+// never fake dates in a ruled ledger.
 export const experience = [
 	{
 		role: 'Full Stack Developer',
 		company: 'Indidino',
 		period: '2023 — Present',
+		current: true,
 		summary:
 			'Building and shipping full-stack products — React and Svelte frontends backed by Node.js services, MongoDB and AWS.',
 		highlights: ['React', 'Svelte', 'Node.js', 'MongoDB', 'AWS S3']
-	},
-	{
-		role: 'Software Developer',
-		company: 'Previous Company', // TODO: replace
-		period: '2021 — 2023', // TODO: replace
-		summary:
-			'Developed internal tools and client applications; owned features from database schema to deployed UI.',
-		highlights: ['JavaScript', 'Express', 'MySQL']
 	}
 ];
 
 export const projects = [
 	{
 		title: 'React Calculator',
+		repo: 'react-calculator',
 		description:
-			'A clean iOS-style calculator built with React. One of my most-used open-source repos — starred by 39 developers and forked 68 times as a learning reference.',
-		tech: ['React', 'JavaScript', 'CSS'],
+			'A study in getting the basics pixel-perfect. Starred by 39 developers, forked 68 times — learners around the world use it as their reference build.',
+		tech: ['React', 'JS', 'CSS'],
 		github: 'https://github.com/Mitanshu21/react-calculator',
-		live: 'https://mitanshu21.github.io/react-calculator/',
-		stars: 39
+		live: 'https://mitanshu21.github.io/react-calculator/'
 	},
 	{
-		title: 'Strapi S3 Upload Plugin',
+		title: 'Strapi S3 Plugin',
+		repo: 'strapi-s3-upload-custom-plugin',
 		description:
-			'A custom Strapi CMS plugin that uploads images to an AWS S3 bucket with tagging support — built to solve a real production need and open-sourced.',
-		tech: ['Strapi', 'Node.js', 'AWS S3'],
+			'Hit a real production gap, closed it, open-sourced it — direct-to-S3 image uploads with tagging for Strapi CMS. Still doing its job today.',
+		tech: ['Strapi', 'Node', 'AWS S3'],
 		github: 'https://github.com/Mitanshu21/strapi-s3-upload-custom-plugin',
-		live: '',
-		stars: 1
+		live: ''
 	},
 	{
 		title: 'Control Center',
+		repo: 'control-center',
 		description:
-			'An operations dashboard built with Svelte — fast, reactive UI with minimal JavaScript shipped to the browser.',
-		tech: ['Svelte', 'TypeScript'],
+			'An operations dashboard that loads before you finish blinking — Svelte, sub-second everything, barely any JavaScript shipped.',
+		tech: ['Svelte', 'TS'],
 		github: 'https://github.com/Mitanshu21/control-center',
-		live: '',
-		stars: 0
+		live: ''
 	},
 	{
 		title: 'Admin Panel',
+		repo: 'admin-panel',
 		description:
-			'A full admin dashboard with data tables, CRUD flows and authentication — the kind of internal tooling every product team needs.',
-		tech: ['React', 'Node.js', 'MongoDB'],
+			'Data tables, CRUD flows, auth — the unglamorous internal tooling every product team runs on, built to just work.',
+		tech: ['React', 'Node', 'MongoDB'],
 		github: 'https://github.com/Mitanshu21/admin-panel',
-		live: '',
-		stars: 1
+		live: ''
 	},
 	{
 		title: 'Discussion Forum',
+		repo: 'Discussion-Forum',
 		description:
-			'A community discussion platform with threads, replies and user accounts — an early full-stack build that taught me a lot about data modelling.',
-		tech: ['HTML', 'JavaScript', 'MySQL'],
+			'Threads, replies, accounts — my first full data model, designed from scratch. It taught me more than any tutorial ever did.',
+		tech: ['HTML', 'JS', 'MySQL'],
 		github: 'https://github.com/Mitanshu21/Discussion-Forum',
-		live: '',
-		stars: 0
+		live: ''
 	},
 	{
 		title: 'React Todo',
+		repo: 'react-todo',
 		description:
-			'A task manager with a tidy component architecture and local persistence. Small scope, carefully finished.',
-		tech: ['React', 'JavaScript'],
+			'Small scope, carefully finished — tidy component architecture, local persistence, no loose ends.',
+		tech: ['React', 'JS'],
 		github: 'https://github.com/Mitanshu21/react-todo',
-		live: 'https://mitanshu21.github.io/react-todo/',
-		stars: 5
+		live: 'https://mitanshu21.github.io/react-todo/'
 	}
+].map((p) => ({ ...p, stars: (stars as Record<string, number>)[p.repo] ?? 0 }));
+
+export const sections = [
+	{ id: 'top', num: '01', label: 'Index', note: '' },
+	{ id: 'about', num: '02', label: 'About', note: 'Who' },
+	{ id: 'experience', num: '03', label: 'Experience', note: 'Where' },
+	{ id: 'work', num: '04', label: 'Work', note: 'Proof' },
+	{ id: 'contact', num: '05', label: 'Contact', note: 'Talk' }
 ];
 
-// Add posts here to reveal the Writing section, e.g.
-// { title: 'Why I moved to Svelte', url: 'https://...', date: '2026-07-01' }
-export const writing: { title: string; url: string; date: string }[] = [];
+export const marqueeText = 'Software that feels instant — ';

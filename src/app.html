@@ -3,7 +3,20 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="theme-color" content="#08080c" />
+		<meta name="theme-color" content="#F2F0EA" />
+		<script>
+			// `js` gates scroll-entrance hidden states so content never
+			// depends on JS to be visible. Repeat visits skip the intro.
+			document.documentElement.classList.add('js');
+			try {
+				if (sessionStorage.getItem('mp_revealed')) {
+					document.documentElement.classList.add('skip-intro');
+				}
+				sessionStorage.setItem('mp_revealed', '1');
+			} catch (e) {
+				/* storage blocked — play the intro every time */
+			}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

@@ -1,19 +1,16 @@
-/* ── Design tokens ─────────────────────────────────────────── */
+/* ═══ PAPER / INK / SIGNAL ═══════════════════════════════════
+   Editorial broadsheet. Three colors, two faces, 1px rules.
+   Every animation on this site appears in the motion inventory
+   in the repo docs — nothing else moves.                       */
+
 :root {
-	--bg: #08080c;
-	--bg-raised: #0d0d14;
-	--line: rgba(255, 255, 255, 0.08);
-	--line-strong: rgba(255, 255, 255, 0.16);
-	--text: #ecedf2;
-	--muted: #9094a6;
-	--faint: #5c5f70;
-	--accent: #5eead4;
-	--accent-dim: rgba(94, 234, 212, 0.12);
-	--font-body: 'Inter Variable', system-ui, -apple-system, sans-serif;
-	--font-display: 'Space Grotesk Variable', var(--font-body);
-	--font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace;
-	--container: 1080px;
-	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--paper: #f2f0ea;
+	--ink: #111111;
+	--signal: #ff4d00;
+	--font-display: 'Archivo Variable', system-ui, -apple-system, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+	--ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--gap: 2vw;
 }
 
 /* ── Base ──────────────────────────────────────────────────── */
@@ -25,32 +22,44 @@
 
 html {
 	scroll-behavior: smooth;
-	color-scheme: dark;
+	color-scheme: light;
 }
 
 body {
-	background: var(--bg);
-	color: var(--text);
-	font-family: var(--font-body);
-	font-size: 1rem;
-	line-height: 1.65;
+	background: var(--paper);
+	color: var(--ink);
+	font-family: var(--font-display);
+	font-variation-settings: 'wght' 400, 'wdth' 100;
+	font-size: 16px;
+	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
-	overflow-x: hidden;
+	overflow-x: clip;
+}
+
+/* paper grain — the only ornament */
+body::after {
+	content: '';
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	pointer-events: none;
+	opacity: 0.03;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {
-	background: var(--accent);
-	color: var(--bg);
+	background: var(--signal);
+	color: var(--paper);
+}
+
+:focus-visible {
+	outline: 2px solid var(--signal);
+	outline-offset: 2px;
 }
 
 a {
 	color: inherit;
 	text-decoration: none;
-}
-
-img {
-	max-width: 100%;
-	display: block;
 }
 
 button {
@@ -61,87 +70,259 @@ button {
 	cursor: pointer;
 }
 
-h1,
-h2,
-h3 {
-	font-family: var(--font-display);
-	font-weight: 600;
-	line-height: 1.1;
+img {
+	max-width: 100%;
+	display: block;
+}
+
+/* ── Skip link ─────────────────────────────────────────────── */
+.skip {
+	position: fixed;
+	top: -100px;
+	left: 1rem;
+	z-index: 200;
+	background: var(--ink);
+	color: var(--paper);
+	font-family: var(--font-mono);
+	font-size: 12px;
+	padding: 0.5rem 1rem;
+}
+
+.skip:focus {
+	top: 1rem;
+}
+
+/* ── The broadsheet grid ───────────────────────────────────── */
+.broadsheet {
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
+	column-gap: var(--gap);
+	padding-inline: var(--gap);
+}
+
+.rule-top {
+	border-top: 1px solid var(--ink);
+}
+
+/* ── Type voices (the complete ladder — nothing in between) ── */
+.v-display {
+	font-variation-settings: 'wght' 850, 'wdth' 125;
+	text-transform: uppercase;
+	line-height: 0.88;
 	letter-spacing: -0.02em;
 }
 
-/* Subtle custom scrollbar */
-::-webkit-scrollbar {
-	width: 10px;
-}
-::-webkit-scrollbar-thumb {
-	background: #1e1f2b;
-	border-radius: 5px;
-	border: 2px solid var(--bg);
-}
-::-webkit-scrollbar-track {
-	background: var(--bg);
+.v-lede {
+	font-variation-settings: 'wght' 500, 'wdth' 105;
+	font-size: clamp(24px, 3.2vw, 56px);
+	line-height: 1.15;
+	letter-spacing: -0.01em;
 }
 
-/* ── Shared layout primitives ──────────────────────────────── */
-.container {
-	max-width: var(--container);
-	margin: 0 auto;
-	padding: 0 clamp(1.25rem, 5vw, 2.5rem);
+.v-body {
+	font-variation-settings: 'wght' 400, 'wdth' 100;
+	font-size: 16px;
+	line-height: 1.6;
+	max-width: 60ch;
 }
 
-.section {
-	padding: clamp(4.5rem, 10vw, 7.5rem) 0;
-	border-top: 1px solid var(--line);
-}
-
-.section-label {
+.v-mono {
 	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	letter-spacing: 0.18em;
+	font-size: 12px;
 	text-transform: uppercase;
-	color: var(--accent);
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	margin-bottom: 2.5rem;
+	letter-spacing: 0.08em;
+	font-feature-settings: 'liga' 0;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.8;
 }
 
-.section-label::after {
-	content: '';
+.v-mono-s {
+	font-family: var(--font-mono);
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-feature-settings: 'liga' 0;
+	font-variant-numeric: tabular-nums;
+}
+
+.outlined {
+	color: transparent;
+	-webkit-text-stroke: 2px currentColor;
+}
+
+@supports not (-webkit-text-stroke: 1px black) {
+	.outlined {
+		color: currentColor;
+		opacity: 0.25;
+		-webkit-text-stroke: 0;
+	}
+}
+
+@media (max-width: 900px) {
+	.outlined {
+		-webkit-text-stroke-width: 1.25px;
+	}
+}
+
+/* outlined needs currentColor tricks: set color back for stroke */
+.outlined {
+	-webkit-text-stroke-color: var(--ink);
+}
+
+.ink .outlined {
+	-webkit-text-stroke-color: var(--paper);
+}
+
+/* ── Ink inversion slabs ───────────────────────────────────── */
+.ink {
+	background: var(--ink);
+	color: var(--paper);
+}
+
+.ink .rule-top,
+.ink :is(.rule-row, .ruled) {
+	border-color: var(--paper);
+}
+
+/* ── Screen-reader-only headings ───────────────────────────── */
+.sr-only {
+	position: absolute;
+	width: 1px;
 	height: 1px;
-	width: 3rem;
-	background: var(--line-strong);
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
 }
 
-.section-title {
-	font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-	margin-bottom: 1.5rem;
+/* ── Giant section numerals ────────────────────────────────── */
+/* horizontal bleed is clipped; vertical stays visible so the
+   numeral genuinely straddles the section's top rule */
+section[data-numeral] {
+	position: relative;
+	overflow-x: clip;
+	overflow-y: visible;
 }
 
-/* ── Scroll reveal (applied by the reveal action) ──────────── */
-.reveal {
-	opacity: 0;
-	transform: translateY(24px);
-	transition:
-		opacity 0.7s var(--ease-out),
-		transform 0.7s var(--ease-out);
+.numeral {
+	position: absolute;
+	top: 0;
+	font-variation-settings: 'wght' 850, 'wdth' 125;
+	font-size: 22vw;
+	line-height: 0.8;
+	margin-top: -0.26em;
+	color: transparent;
+	-webkit-text-stroke: 2px var(--ink);
+	opacity: 0.28;
+	pointer-events: none;
+	user-select: none;
+	z-index: 0;
+	transform: translateY(calc(var(--sy, 0) * -0.055px));
+	will-change: transform;
 }
 
-.reveal.revealed {
+.numeral.left {
+	left: -7vw;
+}
+
+.numeral.right {
+	right: -7vw;
+}
+
+.ink .numeral {
+	-webkit-text-stroke-color: var(--paper);
+}
+
+.numeral.filled {
+	color: var(--signal);
+	-webkit-text-stroke: 0;
 	opacity: 1;
-	transform: none;
 }
 
+@supports not (-webkit-text-stroke: 1px black) {
+	.numeral {
+		color: currentColor;
+		opacity: 0.12;
+	}
+	.numeral.filled {
+		color: var(--signal);
+		opacity: 1;
+	}
+}
+
+@media (max-width: 768px) {
+	.numeral {
+		font-size: 30vw;
+	}
+}
+
+/* ── Marquee (CSS only, duplicated aria-hidden track) ──────── */
+.marquee {
+	display: flex;
+	overflow: clip;
+	white-space: nowrap;
+	user-select: none;
+}
+
+.marquee .track {
+	display: flex;
+	flex-shrink: 0;
+	min-width: 100%;
+	animation: marquee var(--marquee-dur, 22s) linear infinite;
+}
+
+.marquee:hover .track,
+.marquee:focus-within .track {
+	animation-play-state: paused;
+}
+
+.marquee.reverse .track {
+	animation-direction: reverse;
+}
+
+@keyframes marquee {
+	to {
+		transform: translateX(-100%);
+	}
+}
+
+/* ── Scroll entrances (Apple-style rise) ───────────────────── */
+/* hidden state exists only under html.js — content never gates on JS */
+html.js .rise {
+	opacity: 0;
+	translate: 0 30px;
+}
+
+html.js .rise.in {
+	opacity: 1;
+	translate: 0 0;
+	transition:
+		opacity 0.8s var(--ease-expo),
+		translate 0.8s var(--ease-expo);
+	transition-delay: var(--rise-d, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html.js .rise {
+		opacity: 1;
+		translate: none;
+	}
+}
+
+/* ── Reduced motion: one gate over the closed inventory ────── */
 @media (prefers-reduced-motion: reduce) {
 	html {
 		scroll-behavior: auto;
 	}
-	.reveal,
-	.reveal.revealed {
-		opacity: 1;
+	.numeral {
 		transform: none;
-		transition: none;
+	}
+	.marquee .track {
+		animation: none;
+	}
+	.marquee .track[aria-hidden] {
+		display: none;
 	}
 	*,
 	*::before,
@@ -149,5 +330,15 @@ h3 {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
+	}
+}
+
+/* mobile grid collapse */
+@media (max-width: 768px) {
+	:root {
+		--gap: 4vw;
+	}
+	.broadsheet {
+		grid-template-columns: repeat(4, 1fr);
 	}
 }

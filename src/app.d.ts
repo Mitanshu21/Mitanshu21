@@ -8,6 +8,9 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	// Injected by Vite `define` at build time (see vite.config.ts).
+	const __BUILD_SHA__: string;
 }
 
 export {};

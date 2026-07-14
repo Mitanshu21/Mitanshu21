@@ -48,16 +48,16 @@
 
 {#if ui.index}
 	<div
-		class="overlay ink"
+		class="overlay"
 		role="dialog"
 		aria-modal="true"
-		aria-label="Site index"
+		aria-label="Table of contents"
 		tabindex="-1"
 		bind:this={panel}
 		onkeydown={trap}
 	>
 		<div class="head">
-			<p class="v-mono-s">INDEX</p>
+			<p class="v-mono-s"><b>MITANSHU-21</b> — TABLE OF CONTENTS</p>
 			<button class="v-mono-s" onclick={() => (ui.index = false)}>CLOSE ✕</button>
 		</div>
 		<nav>
@@ -70,7 +70,7 @@
 						jump(s.id);
 					}}
 				>
-					<span class="num outlined v-display">{s.num}</span>
+					<span class="num">{s.num}</span>
 					<span class="label v-display">{s.label.toUpperCase()}</span>
 					<span class="note v-mono-s">{s.note ? `— ${s.note.toUpperCase()}` : ''}</span>
 					<span class="arrow" aria-hidden="true">→</span>
@@ -87,7 +87,12 @@
 		z-index: 60;
 		display: flex;
 		flex-direction: column;
+		background: var(--paper);
 		animation: wipe 0.4s var(--ease-expo) both;
+	}
+
+	.head b {
+		color: var(--signal);
 	}
 
 	@keyframes wipe {
@@ -100,7 +105,7 @@
 		display: flex;
 		justify-content: space-between;
 		padding: 1rem 2vw;
-		border-bottom: 1px solid var(--paper);
+		border-bottom: 1.5px solid var(--ink);
 	}
 
 	.head button:hover {
@@ -117,10 +122,10 @@
 	a {
 		display: flex;
 		align-items: baseline;
-		gap: 3vw;
-		padding: 0.6rem 2vw;
-		border-top: 1px solid var(--paper);
-		font-size: clamp(34px, 8vw, 120px);
+		gap: 2.5vw;
+		padding: 0.7rem 1.25rem;
+		border-top: 1px solid var(--ink);
+		font-size: clamp(22px, 4.6vw, 64px);
 		animation: row-in 0.3s ease both;
 		animation-delay: var(--d);
 		transition: color 0.15s ease;
@@ -138,7 +143,8 @@
 
 	.num {
 		font-size: 0.5em;
-		-webkit-text-stroke-color: var(--paper);
+		font-family: var(--font-mono);
+		color: var(--signal);
 	}
 
 	.label {
@@ -163,11 +169,6 @@
 	a:hover,
 	a:focus-visible {
 		color: var(--signal);
-	}
-
-	a:hover .num,
-	a:focus-visible .num {
-		-webkit-text-stroke-color: var(--signal);
 	}
 
 	a:hover .arrow,

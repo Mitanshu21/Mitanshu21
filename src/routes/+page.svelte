@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Hero from '$lib/components/Hero.svelte';
-	import About from '$lib/components/About.svelte';
+	import TemperatureBio from '$lib/components/TemperatureBio.svelte';
+	import BlockDiagram from '$lib/components/BlockDiagram.svelte';
 	import Experience from '$lib/components/Experience.svelte';
 	import Projects from '$lib/components/Projects.svelte';
 	import AiLab from '$lib/components/AiLab.svelte';
@@ -41,18 +42,19 @@
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<a class="skip" href="#about">SKIP TO CONTENT</a>
+<a class="skip" href="#description">SKIP TO CONTENT</a>
 
 <Terminal />
 <IndexOverlay />
 <Chrome />
 
-<main id="main">
+<main id="main" class="sheet">
 	<Hero />
-	<About />
-	<Experience />
+	<TemperatureBio />
+	<BlockDiagram />
 	<Projects />
 	<AiLab />
+	<Experience />
 	<Contact />
 </main>
-<Footer />
+<div class="sheet"><Footer /></div>

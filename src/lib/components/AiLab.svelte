@@ -169,14 +169,14 @@
 					const i = (gy * G + gx) * 4;
 					if (out > 0.5) {
 						// signal #FF4D00, confidence → alpha
-						img.data[i] = 255;
-						img.data[i + 1] = 77;
-						img.data[i + 2] = 0;
+						img.data[i] = 5;
+						img.data[i + 1] = 51;
+						img.data[i + 2] = 255;
 						img.data[i + 3] = Math.round((out - 0.5) * 2 * 150);
 					} else {
-						img.data[i] = 17;
-						img.data[i + 1] = 17;
-						img.data[i + 2] = 17;
+						img.data[i] = 13;
+						img.data[i + 1] = 13;
+						img.data[i + 2] = 13;
 						img.data[i + 3] = Math.round((0.5 - out) * 2 * 130);
 					}
 				}
@@ -193,9 +193,9 @@
 			for (const p of pts) {
 				ctx!.beginPath();
 				ctx!.arc(((p.x + 1) / 2) * s, ((p.y + 1) / 2) * s, R, 0, Math.PI * 2);
-				ctx!.fillStyle = p.c === 1 ? '#FF4D00' : '#111111';
+				ctx!.fillStyle = p.c === 1 ? '#0533FF' : '#0D0D0D';
 				ctx!.fill();
-				ctx!.strokeStyle = '#F2F0EA';
+				ctx!.strokeStyle = '#FBFBF8';
 				ctx!.lineWidth = 1;
 				ctx!.stroke();
 			}
@@ -310,7 +310,7 @@
 			const w = canvas.width;
 			ctx!.clearRect(0, 0, w, canvas.height);
 			// residuals
-			ctx!.strokeStyle = 'rgba(17,17,17,0.25)';
+			ctx!.strokeStyle = 'rgba(13,13,13,0.25)';
 			ctx!.lineWidth = 1;
 			for (const p of dots) {
 				ctx!.beginPath();
@@ -326,7 +326,7 @@
 				if (i === 0) ctx!.moveTo(px(x), yy);
 				else ctx!.lineTo(px(x), yy);
 			}
-			ctx!.strokeStyle = '#FF4D00';
+			ctx!.strokeStyle = '#0533FF';
 			ctx!.lineWidth = Math.max(2, w * 0.0035);
 			ctx!.stroke();
 			// points
@@ -334,9 +334,9 @@
 			for (let i = 0; i < dots.length; i++) {
 				ctx!.beginPath();
 				ctx!.arc(px(dots[i].x), py(dots[i].y), i === dragging ? R * 1.5 : R, 0, Math.PI * 2);
-				ctx!.fillStyle = '#111111';
+				ctx!.fillStyle = '#0D0D0D';
 				ctx!.fill();
-				ctx!.strokeStyle = '#F2F0EA';
+				ctx!.strokeStyle = '#FBFBF8';
 				ctx!.lineWidth = 2;
 				ctx!.stroke();
 			}
@@ -421,22 +421,23 @@
 	});
 </script>
 
-<section class="rule-top" id="lab" data-numeral data-section="05 / 06 — LAB">
-	<span class="numeral left" aria-hidden="true">05</span>
-	<h2 class="sr-only">Lab — live AI demos</h2>
+<section class="rule-top" id="lab" data-section="§4 — CHARACTERISTIC CURVES">
+	<div class="sec-bar">
+		<h2>4. CHARACTERISTIC CURVES</h2>
+		<span class="note">LIVE · MEASURED IN YOUR BROWSER, NOT IN A LAB</span>
+	</div>
 
 	<div class="head" use:rise>
-		<p class="title v-display">THE LAB</p>
 		<p class="sub v-mono">
-			TWO EXPERIMENTS · HAND-WRITTEN BACKPROP · 0 LIBRARIES · 0 SERVERS — IT ALL RUNS IN YOUR
-			BROWSER, RIGHT NOW.
+			THESE FIGURES ARE NOT IMAGES. A NEURAL NETWORK IS TRAINING IN THIS PAGE RIGHT NOW —
+			HAND-WRITTEN BACKPROP, 0 LIBRARIES, 0 SERVERS.
 		</p>
 	</div>
 
 	<div class="bench">
 		<article class="card" use:rise>
 			<header>
-				<p class="v-mono-s exp">EXP 01 — A NEURAL NET, LEARNING</p>
+				<p class="v-mono-s exp">FIG 4-1 — A NEURAL NET, LEARNING</p>
 				<p class="v-mono-s readout">
 					STEP {steps} · LOSS {loss.toFixed(3)} · ACC {acc}%
 				</p>
@@ -458,22 +459,22 @@
 						onclick={() => (addClass = addClass === 1 ? 0 : 1)}
 						title="Class of points added on click"
 					>
-						ADD: {addClass === 1 ? '● SIGNAL' : '○ INK'}
+						ADD: {addClass === 1 ? '● BLUE' : '○ INK'}
 					</button>
 					<button class="ctl v-mono-s" onclick={() => (paused = !paused)}>
 						{paused ? '▶ TRAIN' : '❚❚ PAUSE'}
 					</button>
 				</div>
 			</footer>
-			<p class="hint v-mono-s">
-				A 2-12-12-1 NETWORK, TRAINED WITH BACKPROP I WROTE BY HAND. CLICK THE CANVAS TO ADD
-				DATA — WATCH IT ADAPT.
+			<p class="hint fig-cap">
+				<b>Figure 4-1.</b> A 2-12-12-1 network, trained with hand-written backprop. Click the
+				canvas to add data — watch it adapt.
 			</p>
 		</article>
 
 		<article class="card" use:rise={{ delay: 100 }}>
 			<header>
-				<p class="v-mono-s exp">EXP 02 — GRADIENT DESCENT, CHASING YOU</p>
+				<p class="v-mono-s exp">FIG 4-2 — GRADIENT DESCENT, CHASING YOU</p>
 				<p class="v-mono-s readout">ITER {iters} · MSE {mse.toFixed(4)}</p>
 			</header>
 			<canvas
@@ -481,9 +482,9 @@
 				class="gd"
 				aria-label="Interactive gradient descent curve fitting"
 			></canvas>
-			<p class="hint v-mono-s">
-				A CUBIC FIT, RE-CONVERGING LIVE VIA GRADIENT DESCENT. DRAG THE POINTS — THE CURVE
-				FIGHTS BACK.
+			<p class="hint fig-cap">
+				<b>Figure 4-2.</b> A cubic fit, re-converging live via gradient descent. Drag the
+				points — the curve fights back.
 			</p>
 		</article>
 	</div>
@@ -491,33 +492,22 @@
 
 <style>
 	section {
-		padding-top: clamp(6rem, 14vh, 12rem);
-		padding-bottom: clamp(4rem, 8vh, 7rem);
+		padding-bottom: 1.75rem;
 	}
 
 	.head {
-		position: relative;
-		z-index: 1;
-		padding-inline: 2vw;
-		margin-bottom: 3rem;
-	}
-
-	.title {
-		font-size: clamp(44px, 10vw, 200px);
+		padding: 1.25rem 1.25rem 0;
 	}
 
 	.sub {
-		margin-top: 1rem;
-		max-width: 62ch;
+		max-width: 70ch;
 	}
 
 	.bench {
-		position: relative;
-		z-index: 1;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 2vw;
-		padding-inline: 2vw;
+		gap: 1.25rem;
+		padding: 1.25rem;
 	}
 
 	.card {
@@ -538,6 +528,7 @@
 
 	.exp {
 		color: var(--signal);
+		font-weight: 700;
 	}
 
 	.readout {

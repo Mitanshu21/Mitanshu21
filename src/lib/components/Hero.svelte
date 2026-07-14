@@ -1,309 +1,192 @@
 <script lang="ts">
-	import { profile, marqueeText } from '$lib/data';
+	import { profile, features, applications, maxRatings } from '$lib/data';
 	import { ui } from '$lib/ui.svelte';
 	import { physicsBody, onHeadlineGrab } from '$lib/actions/physics';
-	import { magnetic } from '$lib/actions/magnetic';
-	import Marquee from './Marquee.svelte';
 
 	// Prerendered fallback copy is replaced by the real on-device measurement.
-	let loadedLine = $state('LOADED IN 0.2S — PRERENDERED, NOTHING TO WAIT FOR.');
-	let jsLine = $state('LESS JS THAN A COOKIE BANNER.');
-	// undocumented: the name is grabbable. The quips only exist for
-	// visitors who discover that on their own.
+	let loaded = $state('0.2s (prerendered)');
+	// undocumented: the part number is grabbable. The quips only exist
+	// for visitors who discover that on their own.
 	let quip = $state('');
-	// masks clip the intro rise, then release so thrown letters aren't chopped
-	let played = $state(false);
 
-	$effect(() => {
-		const t = setTimeout(() => (played = true), 900);
-		return () => clearTimeout(t);
-	});
+	const PART = 'MITANSHU-21';
 
-	const LINE1 = 'MITAN—';
-	const LINE2A = 'SHU';
-	const LINE2B = 'PATEL';
-
-	// the headline talks back as you rough it up
 	onHeadlineGrab((n) => {
-		if (n === 2) quip = 'SO YOU FOUND THE PHYSICS.';
+		if (n === 2) quip = 'NOTE: PART IS RATED FOR ROUGH HANDLING.';
 		else if (n === 5) quip = 'CAREFUL — I KERNED THAT BY HAND.';
-		else if (n === 9) quip = 'THE LETTERS HAVE FEELINGS, YOU KNOW.';
+		else if (n === 9) quip = 'WARNING: THE LETTERS HAVE FEELINGS.';
 		else if (n === 13) {
 			quip = 'FINE. YOU WIN.';
-			console.log('%c[physics] visitor reclassified as: chaos agent', 'color:#ff4d00');
+			console.log('%c[qa] visitor reclassified as: drop-test engineer', 'color:#0533ff');
 			ui.greeting = 'ok, you clearly like breaking things. let’s talk — type `help`.';
 			ui.terminal = true;
-		} else if (n === 20) quip = 'THE NAME HAS FILED A COMPLAINT.';
+		} else if (n === 20) quip = 'THE PART NUMBER HAS FILED A COMPLAINT.';
 	});
 
 	$effect(() => {
-		// Any interaction during the intro jumps straight to the end state.
-		const skip = () => document.documentElement.classList.add('skip-intro');
-		const opts = { once: true, passive: true };
-		window.addEventListener('keydown', skip, opts);
-		window.addEventListener('pointerdown', skip, opts);
-		window.addEventListener('wheel', skip, opts);
-
-		// Measure at first frame after hydration — on the visitor's device.
 		requestAnimationFrame(() => {
 			const s = performance.now() / 1000;
-			if (s > 0 && s < 30) {
-				loadedLine = `LOADED IN ${s.toFixed(2)}S — MEASURED ON YOUR DEVICE, NOT CLAIMED.`;
-				jsLine = s > 1 ? 'STILL LESS JS THAN A COOKIE BANNER.' : 'LESS JS THAN A COOKIE BANNER.';
-			}
+			if (s > 0 && s < 30) loaded = `${s.toFixed(2)}s — measured on your device`;
 		});
-
-		return () => {
-			window.removeEventListener('keydown', skip);
-			window.removeEventListener('pointerdown', skip);
-			window.removeEventListener('wheel', skip);
-		};
 	});
 </script>
 
-<section class="hero" id="top" class:played data-section="01 / 06 — INDEX">
-	<header class="masthead rule-row">
-		<p class="v-mono-s">{profile.name.toUpperCase()} — PORTFOLIO, EST. {profile.est}</p>
-		<div class="masthead-right v-mono-s">
+<header class="cover" id="top" data-section="COVER — MITANSHU-21">
+	<div class="masthead">
+		<p class="v-mono-s brand"><b>PATEL</b> SEMICONDUCTOR OF ONE</p>
+		<p class="v-mono-s center">PRODUCT DATA SHEET</p>
+		<div class="right v-mono-s">
 			<a href="mailto:{profile.email}">{profile.email.toUpperCase()}</a>
-			<button onclick={() => (ui.index = true)}>INDEX</button>
-			<button class="chip" onclick={() => (ui.terminal = true)} use:magnetic aria-label="Open terminal">
-				⌘K
-			</button>
+			<button onclick={() => (ui.index = true)}>CONTENTS</button>
 		</div>
-	</header>
+	</div>
 
-	<div class="name-zone">
-		<h1 aria-label="{profile.name} — {profile.role}">
-			<span class="mask"
-				><span class="line l1" aria-hidden="true"
-					>{#each LINE1.split('') as ch, i (i)}<b use:physicsBody>{ch}</b>{/each}</span
-				></span
-			>
-			<span class="mask"
-				><span class="line l2" aria-hidden="true"
-					><i class="block" use:physicsBody></i>{#each LINE2A.split('') as ch, i (i)}<b
-							use:physicsBody>{ch}</b
-						>{/each}<span class="sp"></span>{#each LINE2B.split('') as ch, i (i)}<b
-							class="outlined"
-							use:physicsBody>{ch}</b
+	<div class="part-row">
+		<div class="part-cell">
+			<h1 aria-label="{profile.part} — {profile.name}, {profile.role}">
+				<span class="part v-display" aria-hidden="true"
+					>{#each PART.split('') as ch, i (i)}<b use:physicsBody class:blue={ch === '-'}
+							>{ch}</b
 						>{/each}</span
-				></span
-			>
-		</h1>
-
-		<aside class="meta v-mono">
-			<div class="row"><span>ROLE</span><span>{profile.role.toUpperCase()}</span></div>
-			<div class="row"><span>STACK</span><span>LLMS · PYTHON · SVELTE · NODE</span></div>
-			<div class="row">
-				<span>STATUS</span><span><i class="dot" aria-hidden="true"></i> OPEN TO WORK</span>
-			</div>
-			<div class="row">
-				<span>TERMINAL</span><span><span class="fine">PRESS ⌘K</span><span class="coarse"
-						>TAP ⌘K, BOTTOM RIGHT</span
-					></span>
-			</div>
+				>
+			</h1>
+			<p class="sub v-mono">{profile.name.toUpperCase()} · {profile.role.toUpperCase()}</p>
 			{#if quip}
 				{#key quip}
-					<p class="drag-hint">{quip}</p>
+					<p class="quip v-mono-s">{quip}</p>
 				{/key}
 			{/if}
-		</aside>
+		</div>
 
-		<p class="receipt v-mono-s">
-			{loadedLine}<br />{jsLine}
-		</p>
-
-		<p class="scroll-cue v-mono-s" aria-hidden="true">SCROLL ↓</p>
+		<div class="status-cell v-mono-s">
+			<p><span class="dot" aria-hidden="true"></span> {profile.availabilityNote.toUpperCase()}</p>
+			<p class="dim">EST. {profile.est} · REV 4.0</p>
+			<p class="dim">PAGE RENDER: {loaded.toUpperCase()}</p>
+			<p class="dim">CONSOLE: ⌘K</p>
+		</div>
 	</div>
 
-	<div class="strip rule-top">
-		<Marquee text={marqueeText.toUpperCase()} alternate />
+	<p class="desc v-body">{profile.shortDesc}</p>
+
+	<div class="cols rule-top">
+		<div class="col">
+			<p class="v-label">FEATURES</p>
+			<ul class="v-mono">
+				{#each features as f (f)}
+					<li><span class="bullet" aria-hidden="true">●</span>{f}</li>
+				{/each}
+			</ul>
+		</div>
+		<div class="col rule-left">
+			<p class="v-label">APPLICATIONS</p>
+			<ul class="v-mono">
+				{#each applications as a (a)}
+					<li><span class="bullet" aria-hidden="true">●</span>{a}</li>
+				{/each}
+			</ul>
+			<p class="v-label ratings-label">ABSOLUTE MAXIMUM RATINGS ¹</p>
+			<table class="ds-table">
+				<tbody>
+					{#each maxRatings as r (r.symbol)}
+						<tr>
+							<td>{r.param}</td>
+							<td class="sym">{r.symbol}</td>
+							<td class="num">{r.value}</td>
+							<td>{r.unit}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+			<p class="footnote v-mono-s">¹ EXCEEDING THESE RATINGS MAY IMPAIR RELIABILITY.</p>
+		</div>
 	</div>
-</section>
+</header>
 
 <style>
-	.hero {
-		min-height: 100svh;
-		display: grid;
-		/* minmax(0,1fr): the marquee's max-content width must not
-		   inflate the grid — it once stretched the hero to 10,000px+ */
-		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: auto 1fr auto;
-		overflow: clip;
+	.cover {
+		border-top: 1.5px solid var(--line);
 	}
 
 	/* ── masthead ── */
 	.masthead {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.9rem 2vw;
-		border-bottom: 1px solid var(--ink);
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
 		gap: 1rem;
+		align-items: baseline;
+		padding: 0.7rem 1.25rem;
+		border-bottom: 1.5px solid var(--line);
 	}
 
-	.masthead-right {
-		display: flex;
-		align-items: center;
-	}
-
-	.masthead-right > * {
-		padding-inline: 1rem;
-		border-left: 1px solid var(--ink);
-	}
-
-	.masthead-right > :first-child {
-		border-left: 0;
-	}
-
-	.masthead-right a:hover,
-	.masthead-right button:hover {
+	.brand b {
 		color: var(--signal);
 	}
 
-	.chip {
-		border: 1px solid var(--ink) !important;
-		border-radius: 2px;
-		padding: 0.2rem 0.6rem !important;
-		margin-left: 1rem;
+	.center {
+		text-align: center;
 	}
 
-	/* ── name zone ── */
-	.name-zone {
-		position: relative;
+	.right {
 		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		padding: 4rem 2vw 5rem;
+		justify-content: flex-end;
+		gap: 1.5rem;
 	}
 
-	h1 {
-		font-variation-settings: 'wght' 850, 'wdth' 125;
-		text-transform: uppercase;
-		font-size: clamp(44px, 12.5vw, 230px);
-		line-height: 0.86;
-		letter-spacing: -0.03em;
+	.right a:hover,
+	.right button:hover {
+		color: var(--signal);
 	}
 
-	.mask {
+	/* ── part number ── */
+	.part-row {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 2rem;
+		align-items: end;
+		padding: 2.5rem 1.25rem 1.5rem;
+	}
+
+	.part {
 		display: block;
-		overflow: clip;
+		font-size: clamp(34px, 7.2vw, 100px);
+		white-space: nowrap;
 	}
 
-	.played .mask,
-	:global(html.skip-intro) .mask {
-		overflow: visible;
-	}
-
-	/* Intro choreography is pure CSS — it starts at first paint, runs with
-	   JS disabled, and html.skip-intro (inline head script / interaction)
-	   cuts straight to the end state. */
-	.line {
-		display: block;
-		animation: line-rise 0.6s var(--ease-expo) both;
-		animation-delay: 80ms;
-	}
-
-	.mask:nth-child(2) .line {
-		animation-delay: 160ms;
-	}
-
-	@keyframes line-rise {
-		from {
-			transform: translateY(110%);
-		}
-	}
-
-	:global(html.skip-intro) .line {
-		animation: none;
-	}
-
-	.l2 {
-		padding-left: 0.55em; /* the staircase */
-		position: relative;
-	}
-
-	b,
-	.line i.block {
+	.part b {
 		display: inline-block;
 		font-style: normal;
 		font-weight: inherit;
 	}
 
-	b.outlined {
-		-webkit-text-stroke-color: var(--ink);
+	.part b.blue {
+		color: var(--signal);
 	}
 
-	.sp {
-		display: inline-block;
-		width: 0.18em;
+	.sub {
+		margin-top: 0.75rem;
 	}
 
-	.block {
-		position: absolute;
-		left: 0.3em;
-		top: -0.08em;
-		width: 14vw;
-		height: 0.8em;
-		background: var(--signal);
-		z-index: -1;
-		transform-origin: bottom;
-		animation: block-in 0.5s var(--ease-expo) 160ms both;
+	.quip {
+		margin-top: 0.5rem;
+		color: var(--signal);
+		animation: quip-in 0.3s var(--ease-expo) both;
 	}
 
-	@keyframes block-in {
-		from {
-			scale: 1 0;
-		}
-	}
-
-	:global(html.skip-intro) .block {
-		animation: none;
-	}
-
-	/* ── meta block ── */
-	.meta {
-		position: absolute;
-		top: 1.5rem;
-		right: 2vw;
-		min-width: min(340px, 40vw);
-		animation: meta-in 0.2s ease 0.4s both;
-	}
-
-	@keyframes meta-in {
+	@keyframes quip-in {
 		from {
 			opacity: 0;
+			transform: translateY(4px);
 		}
 	}
 
-	:global(html.skip-intro) .meta {
-		animation: none;
+	.status-cell {
+		text-align: right;
+		line-height: 2;
+		border: 1px solid var(--line);
+		padding: 0.6rem 0.9rem;
 	}
 
-	.meta .row {
-		display: flex;
-		justify-content: space-between;
-		gap: 2rem;
-		border-top: 1px solid var(--ink);
-		padding-block: 0.35rem;
-	}
-
-	.meta .row:last-of-type {
-		border-bottom: 1px solid var(--ink);
-	}
-
-	.coarse {
-		display: none;
-	}
-
-	@media (pointer: coarse) {
-		.fine {
-			display: none;
-		}
-		.coarse {
-			display: inline;
-		}
+	.status-cell .dim {
+		opacity: 0.55;
 	}
 
 	.dot {
@@ -321,67 +204,86 @@
 		}
 	}
 
-	.drag-hint {
-		margin-top: 0.75rem;
-		font-family: var(--font-mono);
-		font-size: 11px;
-		letter-spacing: 0.05em;
+	.desc {
+		padding: 0 1.25rem 1.5rem;
+		max-width: 72ch;
+	}
+
+	/* ── features / applications ── */
+	.cols {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.col {
+		padding: 1.1rem 1.25rem 1.5rem;
+	}
+
+	.rule-left {
+		border-left: 1.5px solid var(--line);
+	}
+
+	ul {
+		list-style: none;
+		margin-top: 0.6rem;
+	}
+
+	li {
+		display: flex;
+		gap: 0.6rem;
+		padding-block: 0.2rem;
+	}
+
+	.bullet {
 		color: var(--signal);
-		animation: quip-in 0.3s var(--ease-expo) both;
+		font-size: 8px;
+		line-height: 2.6;
 	}
 
-	@keyframes quip-in {
-		from {
-			opacity: 0;
-			transform: translateY(4px);
-		}
+	.ratings-label {
+		display: block;
+		margin-top: 1.5rem;
+		margin-bottom: 0.6rem;
 	}
 
-	/* ── receipt + cue ── */
-	.receipt {
-		position: absolute;
-		bottom: 1.25rem;
-		left: 2vw;
-		background: var(--paper);
-		padding: 0.35rem 0.6rem 0.35rem 0;
-		z-index: 1;
+	.sym {
+		color: var(--signal);
 	}
 
-	.scroll-cue {
-		position: absolute;
-		bottom: 3.5rem;
-		right: 1rem;
-		writing-mode: vertical-rl;
+	.num {
+		text-align: right;
+		font-weight: 700;
 	}
 
-	/* ── marquee strip ── */
-	.strip {
-		border-bottom: 1px solid var(--ink);
+	.footnote {
+		margin-top: 0.5rem;
+		opacity: 0.5;
 	}
 
 	@media (max-width: 768px) {
 		.masthead {
-			flex-wrap: wrap;
-			row-gap: 0.4rem;
+			grid-template-columns: 1fr;
+			gap: 0.2rem;
 		}
-
-		.meta {
-			position: static;
-			min-width: 0;
-			margin-top: 2.5rem;
+		.center,
+		.right {
+			text-align: left;
+			justify-content: flex-start;
 		}
-
-		.name-zone {
-			padding-top: 2.5rem;
-			padding-bottom: 6rem;
+		.part-row {
+			grid-template-columns: 1fr;
+			align-items: start;
+			gap: 1.25rem;
 		}
-
-		.block {
-			width: 22vw;
+		.status-cell {
+			text-align: left;
 		}
-
-		.scroll-cue {
-			display: none;
+		.cols {
+			grid-template-columns: 1fr;
+		}
+		.rule-left {
+			border-left: 0;
+			border-top: 1.5px solid var(--line);
 		}
 	}
 </style>

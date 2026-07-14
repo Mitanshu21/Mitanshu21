@@ -2,286 +2,142 @@
 	import { projects } from '$lib/data';
 	import { rise } from '$lib/actions/rise';
 
-	let open = $state(0); // row 1 ships pre-expanded
-	let sectionEl = $state<HTMLElement>();
-	let pill = $state<HTMLElement>();
-	let pillText = $state('OPEN +');
-	let pillVisible = $state(false);
-
-	function toggle(i: number) {
-		open = open === i ? -1 : i;
-		pillText = open === i ? 'CLOSE −' : 'OPEN +';
-	}
-
-	// Cursor-chasing pill — pointer:fine only, lerped at 0.15/frame.
-	$effect(() => {
-		if (!sectionEl || !pill || !matchMedia('(pointer: fine)').matches) return;
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-		const el = sectionEl;
-		const p = pill;
-		let tx = 0;
-		let ty = 0;
-		let x = 0;
-		let y = 0;
-		let raf = 0;
-
-		function loop() {
-			x += (tx - x) * 0.15;
-			y += (ty - y) * 0.15;
-			p.style.transform = `translate(${x - 45}px, ${y - 18}px)`;
-			// stop once converged and hidden — no idle 60fps loop
-			if (!pillVisible && Math.abs(tx - x) < 0.5 && Math.abs(ty - y) < 0.5) {
-				raf = 0;
-				return;
-			}
-			raf = requestAnimationFrame(loop);
-		}
-
-		function onMove(e: PointerEvent) {
-			tx = e.clientX;
-			ty = e.clientY;
-			const row = (e.target as HTMLElement).closest('.row-head');
-			pillVisible = !!row;
-			if (row) {
-				const i = Number((row as HTMLElement).dataset.index);
-				pillText = open === i ? 'CLOSE −' : 'OPEN +';
-			}
-			if (!raf) {
-				x = tx;
-				y = ty;
-				raf = requestAnimationFrame(loop);
-			}
-		}
-
-		function onLeave() {
-			pillVisible = false;
-			cancelAnimationFrame(raf);
-			raf = 0;
-		}
-
-		el.addEventListener('pointermove', onMove);
-		el.addEventListener('pointerleave', onLeave);
-		return () => {
-			cancelAnimationFrame(raf);
-			el.removeEventListener('pointermove', onMove);
-			el.removeEventListener('pointerleave', onLeave);
-		};
-	});
+	let open = $state(0); // first benchmark ships expanded
 </script>
 
-<section class="ink rule-top" id="work" data-numeral data-section="04 / 06 — WORK">
-	<span class="numeral filled left" aria-hidden="true">04</span>
+<section class="rule-top" id="work" data-section="§3 — BENCHMARKS">
+	<div class="sec-bar">
+		<h2>3. BENCHMARKS</h2>
+		<span class="note">{String(projects.length).padStart(2, '0')} PARTS SHIPPED · METRICS FROM THE FIELD</span>
+	</div>
 
-	<header class="head broadsheet" use:rise>
-		<h2 class="v-display outlined">SELECTED WORK</h2>
-		<p class="v-mono-s note">{String(projects.length).padStart(2, '0')} REPOS / PUBLIC / OPEN SOURCE</p>
-	</header>
-
-	<div class="rows">
-		{#each projects as project, i (project.repo)}
-			<article class="rule-row" class:open={open === i} use:rise={{ delay: (i % 3) * 70 }}>
-				<button
-					class="row-head"
-					data-index={i}
-					aria-expanded={open === i}
-					aria-controls="proj-{i}"
-					onclick={() => toggle(i)}
-				>
-					<span class="index v-mono">{String(i + 1).padStart(2, '0')}</span>
-					<span class="title v-display">{project.title.toUpperCase()}</span>
-					<span class="meta v-mono-s">
-						{project.tech.join(' / ').toUpperCase()}{project.stars > 0
-							? `  ·  ★ ${project.stars}`
-							: ''}
-						<span class="glyph" aria-hidden="true">{open === i ? '−' : '+'}</span>
-					</span>
-				</button>
-
-				<div class="panel" id="proj-{i}" inert={open !== i}>
-					<div class="panel-inner broadsheet">
-						<p class="desc v-body">{project.description}</p>
-						<p class="links v-mono">
-							<a href={project.github} target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
-							{#if project.live}
-								<a href={project.live} target="_blank" rel="noopener noreferrer">LIVE ↗</a>
-							{/if}
-						</p>
-					</div>
-				</div>
-			</article>
-		{/each}
+	<div class="wrap" use:rise>
+		<table class="ds-table">
+			<thead>
+				<tr>
+					<th class="idx">#</th>
+					<th>BENCHMARK</th>
+					<th>STACK</th>
+					<th class="result">RESULT</th>
+				</tr>
+			</thead>
+			{#each projects as project, i (project.repo)}
+				<tbody class:open={open === i}>
+					<tr>
+						<td class="idx">{String(i + 1).padStart(2, '0')}</td>
+						<td class="title-cell">
+							<button
+								aria-expanded={open === i}
+								aria-controls="bench-{i}"
+								onclick={() => (open = open === i ? -1 : i)}
+							>
+								<span class="glyph" aria-hidden="true">{open === i ? '▾' : '▸'}</span>
+								{project.title.toUpperCase()}
+							</button>
+						</td>
+						<td class="stack">{project.tech.join(' / ').toUpperCase()}</td>
+						<td class="result">
+							{#if project.stars > 0}★ {project.stars}{:else}PASS{/if}
+						</td>
+					</tr>
+					<tr class="detail" id="bench-{i}" inert={open !== i}>
+						<td></td>
+						<td colspan="3">
+							<p class="v-body">{project.description}</p>
+							<p class="links v-mono-s">
+								<a href={project.github} target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
+								{#if project.live}
+									<a href={project.live} target="_blank" rel="noopener noreferrer">LIVE DEMO ↗</a>
+								{/if}
+							</p>
+						</td>
+					</tr>
+				</tbody>
+			{/each}
+		</table>
+		<p class="fig-cap">
+			<b>Table 3-1.</b> Shipped parts, public and open source. Click a row for test notes.
+		</p>
 	</div>
 </section>
 
-<div class="pill v-mono-s" class:visible={pillVisible} bind:this={pill} aria-hidden="true">
-	{pillText}
-</div>
-
 <style>
-	section {
-		padding-top: clamp(6rem, 14vh, 12rem);
-		padding-bottom: 4rem;
+	.wrap {
+		padding: 1.5rem 1.25rem 1.75rem;
 	}
 
-	.head {
-		align-items: baseline;
-		margin-bottom: 3rem;
-		position: relative;
-		z-index: 1;
-	}
-
-	h2 {
-		grid-column: 1 / 10;
-		font-size: clamp(44px, 10vw, 200px);
-		-webkit-text-stroke-color: var(--paper);
-	}
-
-	.note {
-		grid-column: 10 / 13;
-		text-align: right;
-		align-self: end;
-	}
-
-	.rows {
-		position: relative;
-		z-index: 1;
-	}
-
-	article {
-		border-top: 1px solid var(--paper);
-	}
-
-	article:last-child {
-		border-bottom: 1px solid var(--paper);
-	}
-
-	.row-head {
-		display: grid;
-		grid-template-columns: minmax(48px, 6vw) 1fr auto;
-		align-items: baseline;
-		gap: 2vw;
-		width: 100%;
-		text-align: left;
-		padding: 1.4rem 2vw;
-		cursor: pointer;
-	}
-
-	.title {
-		font-size: clamp(28px, 6vw, 110px);
-		transition: color 0.15s ease;
-	}
-
-	.row-head:hover .title,
-	.row-head:focus-visible .title,
-	.open .title {
+	.idx {
+		width: 3.5rem;
 		color: var(--signal);
 	}
 
-	.meta {
+	.result {
+		text-align: right;
 		white-space: nowrap;
-		opacity: 0.7;
+		font-weight: 700;
+	}
+
+	.title-cell button {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		display: flex;
+		gap: 0.6rem;
+		width: 100%;
+		text-align: left;
+	}
+
+	.title-cell button:hover {
+		color: var(--signal);
 	}
 
 	.glyph {
-		display: inline-block;
-		margin-left: 1.5rem;
-		opacity: 1;
+		color: var(--signal);
 	}
 
-	/* accordion — grid-template-rows 0fr → 1fr */
-	.panel {
-		display: grid;
-		grid-template-rows: 0fr;
-		transition: grid-template-rows 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+	.stack {
+		opacity: 0.65;
+		white-space: nowrap;
 	}
 
-	.open .panel {
-		grid-template-rows: 1fr;
+	tbody.open td {
+		background: rgba(5, 51, 255, 0.045);
 	}
 
-	.panel-inner {
-		overflow: clip;
+	.detail {
+		display: none;
 	}
 
-	.desc {
-		grid-column: 3 / 9;
-		padding-bottom: 2rem;
+	tbody.open .detail {
+		display: table-row;
+	}
+
+	.detail p.v-body {
+		padding-block: 0.35rem;
+		font-family: var(--font-body);
 	}
 
 	.links {
-		grid-column: 9 / 13;
 		display: flex;
-		gap: 2.5rem;
-		justify-content: flex-end;
-		align-items: start;
+		gap: 2rem;
+		padding-block: 0.35rem;
 	}
 
 	.links a {
-		border-bottom: 1px solid var(--paper);
-		padding-bottom: 2px;
-		transition:
-			color 0.15s ease,
-			border-color 0.15s ease;
+		color: var(--signal);
+		font-weight: 700;
+		border-bottom: 1px solid var(--signal);
+		padding-bottom: 1px;
 	}
 
 	.links a:hover {
-		color: var(--signal);
-		border-color: var(--signal);
-	}
-
-	/* cursor pill */
-	.pill {
-		position: fixed;
-		top: 0;
-		left: 0;
-		z-index: 45;
-		width: 90px;
-		height: 36px;
-		display: grid;
-		place-items: center;
-		background: var(--paper);
 		color: var(--ink);
-		border-radius: 999px;
-		pointer-events: none;
-		opacity: 0;
-		transition: opacity 0.15s ease;
-	}
-
-	.pill.visible {
-		opacity: 1;
+		border-color: var(--ink);
 	}
 
 	@media (max-width: 768px) {
-		h2 {
-			grid-column: 1 / -1;
-		}
-		.note {
-			grid-column: 1 / -1;
-			text-align: left;
-		}
-		.row-head {
-			grid-template-columns: 1fr;
-			gap: 0.3rem;
-			padding-block: 1.1rem;
-		}
-		.index {
-			display: none;
-		}
-		.desc {
-			grid-column: 1 / -1;
-		}
-		.links {
-			grid-column: 1 / -1;
-			justify-content: flex-start;
-			padding-bottom: 1.5rem;
-		}
-		.pill {
-			display: none;
-		}
-	}
-
-	@media (pointer: coarse), (prefers-reduced-motion: reduce) {
-		.pill {
+		.stack {
 			display: none;
 		}
 	}

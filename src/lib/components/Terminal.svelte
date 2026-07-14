@@ -29,7 +29,7 @@
 		'ping',
 		'sudo hire mitanshu'
 	];
-	const COMPLETIONS = [...SUGGESTIONS, 'help', 'goto lab', 'goto work', 'goto about', 'open 1', 'copy email', 'clear', 'exit'];
+	const COMPLETIONS = [...SUGGESTIONS, 'help', 'goto lab', 'goto work', 'goto contact', 'open 1', 'copy email', 'clear', 'exit'];
 	const history: string[] = [];
 	let histIdx = $state(-1);
 	const ghost = $derived.by(() => {
@@ -52,7 +52,7 @@
 		{ text: '  experience        where I have worked', kind: 'ok', run: 'experience' },
 		{ text: '  contact           reach me', kind: 'ok', run: 'contact' },
 		{ text: '  copy email        clipboard it', kind: 'ok', run: 'copy email' },
-		{ text: '  goto <section>    about · experience · work · contact', kind: 'ok', run: 'goto work' },
+		{ text: '  goto <section>    work · lab · experience · contact', kind: 'ok', run: 'goto lab' },
 		{ text: '  ping              measure this machine', kind: 'ok', run: 'ping' },
 		{ text: '  sudo hire mitanshu', kind: 'ok', run: 'sudo hire mitanshu' },
 		{ text: '  clear · exit', kind: 'ok', run: 'clear' },
@@ -169,7 +169,7 @@
 			}
 			case 'goto': {
 				const target = sections.find((s) => s.label.toLowerCase() === arg || s.id === arg);
-				if (!target) return print([dim('goto <about|experience|work|contact>')]);
+				if (!target) return print([dim('goto <description|diagram|work|lab|experience|contact>')]);
 				ui.terminal = false;
 				scrollToSection(target.id);
 				return;
@@ -299,7 +299,7 @@
 			onkeydown={trap}
 		>
 			<div class="bar">
-				<p class="v-mono-s">MITANSHU@PORTFOLIO:~$ — INTERACTIVE</p>
+				<p class="v-mono-s">MITANSHU-21 — INFERENCE CONSOLE</p>
 				<button class="v-mono-s" onclick={() => (ui.terminal = false)}>ESC ✕</button>
 			</div>
 

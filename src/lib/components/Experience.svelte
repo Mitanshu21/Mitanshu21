@@ -3,90 +3,79 @@
 	import { rise } from '$lib/actions/rise';
 </script>
 
-<section class="rule-top" id="experience" data-numeral data-section="03 / 06 — EXPERIENCE">
-	<span class="numeral right" aria-hidden="true">03</span>
-	<h2 class="sr-only">Experience</h2>
+<section class="rule-top" id="experience" data-section="§5 — OPERATING HISTORY">
+	<div class="sec-bar">
+		<h2>5. OPERATING HISTORY</h2>
+		<span class="note">FIELD RECORD · CONTINUOUS DUTY</span>
+	</div>
 
-	{#each experience as job (job.company + job.period)}
-		<article class="row rule-top broadsheet" use:rise>
-			<p class="period v-mono-s">{job.period.toUpperCase()}</p>
-			<div class="role-cell">
-				<h3 class="v-display">
-					{job.role.toUpperCase()} — <span class="outlined">{job.company.toUpperCase()}</span>
-				</h3>
-				<p class="highlights v-mono-s">{job.highlights.join(' / ').toUpperCase()}</p>
-			</div>
-			<div class="side">
-				<p class="v-body summary">{job.summary}</p>
-				<p class="status v-mono-s" class:running={job.current}>
-					{#if job.current}<i class="dot" aria-hidden="true"></i> RUNNING{:else}EXITED 0{/if}
-				</p>
-			</div>
-		</article>
-	{/each}
+	<div class="wrap" use:rise>
+		<table class="ds-table">
+			<thead>
+				<tr>
+					<th>PERIOD</th>
+					<th>DEPLOYMENT</th>
+					<th>NOTES</th>
+					<th class="st">STATUS</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each experience as job (job.company + job.period)}
+					<tr>
+						<td class="period">{job.period.toUpperCase()}</td>
+						<td>
+							<b>{job.role.toUpperCase()}</b><br />
+							<span class="co">{job.company.toUpperCase()}</span><br />
+							<span class="hl">{job.highlights.join(' / ').toUpperCase()}</span>
+						</td>
+						<td class="notes">{job.summary}</td>
+						<td class="st">
+							{#if job.current}<span class="dot" aria-hidden="true"></span> IN OPERATION{:else}<span
+									class="ret">RETIRED</span
+								>{/if}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+		<p class="fig-cap"><b>Table 5-1.</b> No unplanned downtime on record.</p>
+	</div>
 </section>
 
 <style>
-	section {
-		padding-top: clamp(6rem, 14vh, 12rem);
-	}
-
-	.row {
-		grid-template-rows: auto;
-		align-items: start;
-		padding-block: 2.5rem;
-		position: relative;
-		z-index: 1;
-		transition:
-			background 0.15s ease,
-			color 0.15s ease;
-	}
-
-	.row:hover {
-		background: var(--ink);
-		color: var(--paper);
-	}
-
-	.row:hover .outlined {
-		-webkit-text-stroke-color: var(--paper);
+	.wrap {
+		padding: 1.5rem 1.25rem 1.75rem;
 	}
 
 	.period {
-		grid-column: 1 / 3;
-		padding-top: 0.5rem;
+		white-space: nowrap;
+		color: var(--signal);
+		font-weight: 700;
 	}
 
-	.role-cell {
-		grid-column: 3 / 10;
+	.co {
+		opacity: 0.65;
 	}
 
-	h3 {
-		font-size: clamp(32px, 5vw, 88px);
+	.hl {
+		font-size: 11px;
+		opacity: 0.5;
 	}
 
-	.highlights {
-		margin-top: 1rem;
-		opacity: 0.7;
-	}
-
-	.side {
-		grid-column: 10 / 13;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.summary {
+	.notes {
+		font-family: var(--font-body);
 		font-size: 14px;
+		max-width: 44ch;
 	}
 
-	.status {
+	.st {
+		white-space: nowrap;
 		text-align: right;
-		opacity: 0.45;
+		font-weight: 700;
 	}
 
-	.status.running {
-		opacity: 1;
+	.ret {
+		opacity: 0.45;
 	}
 
 	.dot {
@@ -105,16 +94,8 @@
 	}
 
 	@media (max-width: 768px) {
-		.period,
-		.role-cell,
-		.side {
-			grid-column: 1 / -1;
-		}
-		.side {
-			margin-top: 1rem;
-		}
-		.status {
-			text-align: left;
+		.notes {
+			display: none;
 		}
 	}
 </style>

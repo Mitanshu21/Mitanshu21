@@ -58,6 +58,11 @@ function tick(now: number) {
 		}
 		b.vx += (-K * b.x - C * b.vx) * dt;
 		b.vy += (-K * b.y - C * b.vy) * dt;
+		// extra brake near home — cascades must always die out
+		if (Math.abs(b.x) < 40 && Math.abs(b.y) < 40) {
+			b.vx *= 0.9;
+			b.vy *= 0.9;
+		}
 		b.x += b.vx * dt * 60;
 		b.y += b.vy * dt * 60;
 		if (
@@ -72,10 +77,14 @@ function tick(now: number) {
 		}
 	}
 
-	// collisions — only energetic bodies shove their neighbours; resting
-	// letters overlap by design (that's kerning), so they never push back
+	// collisions — force applies only when two bodies get CLOSER than they
+	// naturally sit. Kerned letters overlap at rest by design, so resting
+	// (or merely held) letters exert nothing until something actually
+	// invades their space.
+	// "fast" means genuinely flying — settling wobble must never re-trigger
+	// collisions or the whole word oscillates forever
 	const energetic = (bd: PhysicsBody) =>
-		bd.grab !== null || Math.hypot(bd.vx, bd.vy) > 3;
+		bd.grab !== null || Math.hypot(bd.vx, bd.vy) > 40;
 
 	for (let i = 0; i < bodies.length; i++) {
 		const a = bodies[i];
@@ -84,18 +93,16 @@ function tick(now: number) {
 			const b = bodies[j];
 			if (!b.home) measureHome(b);
 			if (!energetic(a) && !energetic(b)) continue;
-			const ax = a.home!.x + a.x;
-			const ay = a.home!.y + a.y;
-			const bx = b.home!.x + b.x;
-			const by = b.home!.y + b.y;
-			const dx = bx - ax;
-			const dy = by - ay;
+			const dx = b.home!.x + b.x - (a.home!.x + a.x);
+			const dy = b.home!.y + b.y - (a.home!.y + a.y);
 			const dist = Math.hypot(dx, dy) || 1;
-			const minDist = (a.r + b.r) * 0.72;
+			const natural = Math.hypot(b.home!.x - a.home!.x, b.home!.y - a.home!.y);
+			const minDist = Math.min((a.r + b.r) * 0.72, natural * 0.85);
 			if (dist >= minDist) continue;
-			const push = ((minDist - dist) / dist) * 14;
-			const nx = dx * push;
-			const ny = dy * push;
+			// capped, normalized impulse — bounded energy per frame per pair
+			const impulse = Math.min((minDist - dist) * 0.9, 30);
+			const nx = (dx / dist) * impulse;
+			const ny = (dy / dist) * impulse;
 			if (a.grab === null) {
 				a.vx -= nx;
 				a.vy -= ny;

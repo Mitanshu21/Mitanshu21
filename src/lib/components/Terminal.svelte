@@ -215,6 +215,10 @@
 
 	$effect(() => {
 		if (ui.terminal) {
+			if (ui.greeting) {
+				lines.push({ text: ui.greeting, kind: 'ok' });
+				ui.greeting = '';
+			}
 			tick().then(() => {
 				// never auto-focus on touch — it summons the keyboard over the sheet
 				if (matchMedia('(pointer: fine)').matches) inputEl?.focus();

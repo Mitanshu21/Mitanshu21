@@ -8,7 +8,9 @@
 	// Prerendered fallback copy is replaced by the real on-device measurement.
 	let loadedLine = $state('LOADED IN 0.2S — PRERENDERED, NOTHING TO WAIT FOR.');
 	let jsLine = $state('LESS JS THAN A COOKIE BANNER.');
-	let hint = $state('↖ THE NAME IS GRABBABLE. THROW IT.');
+	// undocumented: the name is grabbable. The quips only exist for
+	// visitors who discover that on their own.
+	let quip = $state('');
 	// masks clip the intro rise, then release so thrown letters aren't chopped
 	let played = $state(false);
 
@@ -23,11 +25,15 @@
 
 	// the headline talks back as you rough it up
 	onHeadlineGrab((n) => {
-		if (n === 4) hint = 'CAREFUL — I KERNED THAT BY HAND.';
-		else if (n === 8) {
-			hint = 'FINE. YOU WIN. NOW TRY ⌘K.';
+		if (n === 2) quip = 'SO YOU FOUND THE PHYSICS.';
+		else if (n === 5) quip = 'CAREFUL — I KERNED THAT BY HAND.';
+		else if (n === 9) quip = 'THE LETTERS HAVE FEELINGS, YOU KNOW.';
+		else if (n === 13) {
+			quip = 'FINE. YOU WIN.';
 			console.log('%c[physics] visitor reclassified as: chaos agent', 'color:#ff4d00');
-		}
+			ui.greeting = 'ok, you clearly like breaking things. let’s talk — type `help`.';
+			ui.terminal = true;
+		} else if (n === 20) quip = 'THE NAME HAS FILED A COMPLAINT.';
 	});
 
 	$effect(() => {
@@ -97,7 +103,11 @@
 						>TAP ⌘K, BOTTOM RIGHT</span
 					></span>
 			</div>
-			<p class="drag-hint">{hint}</p>
+			{#if quip}
+				{#key quip}
+					<p class="drag-hint">{quip}</p>
+				{/key}
+			{/if}
 		</aside>
 
 		<p class="receipt v-mono-s">
@@ -317,6 +327,14 @@
 		font-size: 11px;
 		letter-spacing: 0.05em;
 		color: var(--signal);
+		animation: quip-in 0.3s var(--ease-expo) both;
+	}
+
+	@keyframes quip-in {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
 	}
 
 	/* ── receipt + cue ── */

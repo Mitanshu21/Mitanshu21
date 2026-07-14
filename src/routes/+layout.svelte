@@ -1,0 +1,14 @@
+<script lang="ts">
+	import '@fontsource-variable/inter/index.css';
+	import '@fontsource-variable/space-grotesk/index.css';
+	import '../app.css';
+	import favicon from '$lib/assets/favicon.svg';
+
+	let { children } = $props();
+</script>
+
+<svelte:head>
+	<link rel="icon" href={favicon} />
+</svelte:head>
+
+{@render children()}

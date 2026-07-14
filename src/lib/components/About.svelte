@@ -3,15 +3,15 @@
 	import { rise } from '$lib/actions/rise';
 </script>
 
-<section class="rule-top" id="about" data-numeral data-section="02 / 05 — ABOUT">
+<section class="rule-top" id="about" data-numeral data-section="02 / 06 — ABOUT">
 	<span class="numeral left" aria-hidden="true">02</span>
 	<h2 class="sr-only">About</h2>
 
 	<div class="broadsheet body">
 		<p class="lede v-lede" use:rise>
-			I’m Mitanshu — a full-stack developer shipping end-to-end products in Svelte, React,
-			Node.js and Python. I obsess over the <mark>milliseconds</mark>: this page carries
-			<mark>less JavaScript than most cookie banners</mark>.
+			I’m Mitanshu — an AI engineer who ships the whole stack: models, APIs and interfaces.
+			The lab on this page is <mark>training a neural network in your browser</mark> right
+			now — and the whole site still carries <mark>less JavaScript than a cookie banner</mark>.
 		</p>
 
 		<div class="prose" use:rise={{ delay: 80 }}>

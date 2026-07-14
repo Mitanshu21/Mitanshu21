@@ -61,7 +61,7 @@
 	});
 </script>
 
-<section class="hero" id="top" class:played data-section="01 / 05 — INDEX">
+<section class="hero" id="top" class:played data-section="01 / 06 — INDEX">
 	<header class="masthead rule-row">
 		<p class="v-mono-s">{profile.name.toUpperCase()} — PORTFOLIO, EST. {profile.est}</p>
 		<div class="masthead-right v-mono-s">
@@ -93,8 +93,8 @@
 		</h1>
 
 		<aside class="meta v-mono">
-			<div class="row"><span>ROLE</span><span>FULL-STACK DEVELOPER</span></div>
-			<div class="row"><span>STACK</span><span>SVELTE · REACT · NODE · PYTHON</span></div>
+			<div class="row"><span>ROLE</span><span>{profile.role.toUpperCase()}</span></div>
+			<div class="row"><span>STACK</span><span>LLMS · PYTHON · SVELTE · NODE</span></div>
 			<div class="row">
 				<span>STATUS</span><span><i class="dot" aria-hidden="true"></i> OPEN TO WORK</span>
 			</div>

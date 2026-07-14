@@ -3,7 +3,7 @@
 	import { rise } from '$lib/actions/rise';
 </script>
 
-<section class="rule-top" id="experience" data-numeral data-section="03 / 05 — EXPERIENCE">
+<section class="rule-top" id="experience" data-numeral data-section="03 / 06 — EXPERIENCE">
 	<span class="numeral right" aria-hidden="true">03</span>
 	<h2 class="sr-only">Experience</h2>
 

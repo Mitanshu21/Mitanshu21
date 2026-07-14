@@ -4,7 +4,7 @@
 	import { ui } from '$lib/ui.svelte';
 	import { magnetic } from '$lib/actions/magnetic';
 
-	let current = $state('01 / 05 — INDEX');
+	let current = $state('01 / 06 — INDEX');
 
 	$effect(() => {
 		const observer = new IntersectionObserver(

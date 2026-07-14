@@ -3,6 +3,7 @@
 	import About from '$lib/components/About.svelte';
 	import Experience from '$lib/components/Experience.svelte';
 	import Projects from '$lib/components/Projects.svelte';
+	import AiLab from '$lib/components/AiLab.svelte';
 	import Contact from '$lib/components/Contact.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Terminal from '$lib/components/Terminal.svelte';
@@ -11,7 +12,7 @@
 	import { profile } from '$lib/data';
 
 	const title = `${profile.name} — ${profile.role}`;
-	const description = `${profile.tagline} Portfolio of ${profile.name}, full-stack developer working with Svelte, React, Node.js and Python.`;
+	const description = `${profile.tagline} Portfolio of ${profile.name}, AI engineer shipping models, APIs and interfaces — with live neural-network demos running in your browser.`;
 
 	// Numeral parallax drift: one passive scroll listener writes --sy on :root.
 	$effect(() => {
@@ -51,6 +52,7 @@
 	<About />
 	<Experience />
 	<Projects />
+	<AiLab />
 	<Contact />
 </main>
 <Footer />

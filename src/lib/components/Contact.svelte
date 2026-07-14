@@ -18,8 +18,8 @@
 	}
 </script>
 
-<section class="rule-top" id="contact" data-numeral data-section="05 / 05 — CONTACT">
-	<span class="numeral right" aria-hidden="true">05</span>
+<section class="rule-top" id="contact" data-numeral data-section="06 / 06 — CONTACT">
+	<span class="numeral right" aria-hidden="true">06</span>
 	<h2 class="sr-only">Contact</h2>
 
 	<div class="inner">

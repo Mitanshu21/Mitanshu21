@@ -6,36 +6,56 @@
 
 	let sheetEl = $state<HTMLElement>();
 
-	type Line = { text: string; kind: 'cmd' | 'out' | 'ok' | 'dim' };
+	type Line = { text: string; kind: 'cmd' | 'out' | 'ok' | 'dim'; run?: string };
 
 	const stamp = () => `[${(performance.now() / 1000).toFixed(2).padStart(6, '0')}]`;
 
 	let lines = $state<Line[]>([
 		{ text: 'mitanshu.sh — last login: just now, from somewhere curious', kind: 'dim' },
-		{ text: 'type `help` for commands, or just ask me something.', kind: 'dim' }
+		{ text: 'click a command below, hit Tab to autocomplete — or just ask me something.', kind: 'dim' }
 	]);
 	let input = $state('');
 	let busy = $state(false);
 	let inputEl = $state<HTMLInputElement>();
 	let bodyEl = $state<HTMLDivElement>();
 
+	// oh-my-zsh comforts: clickable chips, ghost autosuggest, history
+	const SUGGESTIONS = [
+		'whoami',
+		'projects',
+		'stack',
+		'experience',
+		'contact',
+		'ping',
+		'sudo hire mitanshu'
+	];
+	const COMPLETIONS = [...SUGGESTIONS, 'help', 'goto lab', 'goto work', 'goto about', 'open 1', 'copy email', 'clear', 'exit'];
+	const history: string[] = [];
+	let histIdx = $state(-1);
+	const ghost = $derived.by(() => {
+		const q = input.toLowerCase();
+		if (!q) return '';
+		const match = COMPLETIONS.find((c) => c.startsWith(q) && c !== q);
+		return match ? match.slice(input.length) : '';
+	});
+
 	const out = (text: string): Line => ({ text, kind: 'out' });
 	const ok = (text: string): Line => ({ text, kind: 'ok' });
 	const dim = (text: string): Line => ({ text, kind: 'dim' });
 
 	const HELP: Line[] = [
-		out('available commands:'),
-		ok('  whoami            who is this guy'),
-		ok('  projects          selected work'),
-		ok('  open <n>          open project n on github'),
-		ok('  stack             technologies I use'),
-		ok('  experience        where I have worked'),
-		ok('  contact           reach me'),
-		ok('  copy email        clipboard it'),
-		ok('  goto <section>    about · experience · work · contact'),
-		ok('  ping              measure this machine'),
-		ok('  sudo hire mitanshu'),
-		ok('  clear · exit'),
+		out('available commands (click to run):'),
+		{ text: '  whoami            who is this guy', kind: 'ok', run: 'whoami' },
+		{ text: '  projects          selected work', kind: 'ok', run: 'projects' },
+		{ text: '  open <n>          open project n on github', kind: 'ok', run: 'open 1' },
+		{ text: '  stack             technologies I use', kind: 'ok', run: 'stack' },
+		{ text: '  experience        where I have worked', kind: 'ok', run: 'experience' },
+		{ text: '  contact           reach me', kind: 'ok', run: 'contact' },
+		{ text: '  copy email        clipboard it', kind: 'ok', run: 'copy email' },
+		{ text: '  goto <section>    about · experience · work · contact', kind: 'ok', run: 'goto work' },
+		{ text: '  ping              measure this machine', kind: 'ok', run: 'ping' },
+		{ text: '  sudo hire mitanshu', kind: 'ok', run: 'sudo hire mitanshu' },
+		{ text: '  clear · exit', kind: 'ok', run: 'clear' },
 		dim('or ask in plain words — e.g. "do you know svelte?"')
 	];
 
@@ -49,10 +69,14 @@
 
 	function listProjects(): Line[] {
 		return [
-			...projects.map((p, i) =>
-				out(`  ${i + 1}. ${p.title}${p.stars > 1 ? ` ★${p.stars}` : ''} — ${p.tech.join(', ')}`)
+			...projects.map(
+				(p, i): Line => ({
+					text: `  ${i + 1}. ${p.title}${p.stars > 1 ? ` ★${p.stars}` : ''} — ${p.tech.join(', ')}`,
+					kind: 'out',
+					run: `open ${i + 1}`
+				})
 			),
-			dim('try `open 1`')
+			dim('click a project (or `open <n>`) to see it on github')
 		];
 	}
 
@@ -68,14 +92,19 @@
 
 	function contact(): Line[] {
 		return [
-			ok(`  email    ${profile.email}`),
-			ok(`  github   ${profile.github}`),
-			dim('or take the shortcut: `sudo hire mitanshu`')
+			{ text: `  email    ${profile.email}  (click to copy)`, kind: 'ok', run: 'copy email' },
+			{ text: `  github   ${profile.github}`, kind: 'ok', run: 'open 1' },
+			{ text: '  or take the shortcut: `sudo hire mitanshu`', kind: 'dim', run: 'sudo hire mitanshu' }
 		];
 	}
 
 	function answer(query: string): Line[] {
 		const q = query.toLowerCase();
+		if (/\b(ai|ml|llm|model|neural|machine learning)/.test(q))
+			return [
+				out('the lab on this page is training a neural net in your browser right now.'),
+				{ text: '  → goto lab', kind: 'ok', run: 'goto lab' }
+			];
 		if (/\b(svelte|react|node|python|django|mongo|stack|tech|skill)/.test(q))
 			return [out('yes — here is the full stack:'), ...stack()];
 		if (/\b(hire|hiring|job|available|freelance|work with|open to)/.test(q))
@@ -178,13 +207,35 @@
 		}
 	}
 
-	function submit(e: SubmitEvent) {
-		e.preventDefault();
-		const raw = input.trim();
+	function exec(raw: string) {
 		if (!raw || busy) return;
 		lines.push({ text: raw, kind: 'cmd' });
+		history.push(raw);
+		histIdx = -1;
 		input = '';
 		void run(raw);
+	}
+
+	function submit(e: SubmitEvent) {
+		e.preventDefault();
+		exec(input.trim());
+	}
+
+	function onInputKeydown(e: KeyboardEvent) {
+		if ((e.key === 'Tab' || e.key === 'ArrowRight') && ghost) {
+			// accept the ghost suggestion (zsh-autosuggestions style)
+			e.preventDefault();
+			e.stopPropagation();
+			input = input + ghost;
+		} else if (e.key === 'ArrowUp' && history.length) {
+			e.preventDefault();
+			histIdx = histIdx === -1 ? history.length - 1 : Math.max(0, histIdx - 1);
+			input = history[histIdx];
+		} else if (e.key === 'ArrowDown' && histIdx !== -1) {
+			e.preventDefault();
+			histIdx = histIdx === history.length - 1 ? -1 : histIdx + 1;
+			input = histIdx === -1 ? '' : history[histIdx];
+		}
 	}
 
 	function onKeydown(e: KeyboardEvent) {
@@ -248,30 +299,45 @@
 			onkeydown={trap}
 		>
 			<div class="bar">
-				<p class="v-mono-s">MITANSHU@INDIDINO:~$ — INTERACTIVE</p>
+				<p class="v-mono-s">MITANSHU@PORTFOLIO:~$ — INTERACTIVE</p>
 				<button class="v-mono-s" onclick={() => (ui.terminal = false)}>ESC ✕</button>
 			</div>
 
 			<div class="body" bind:this={bodyEl} role="log" aria-live="polite">
 				{#each lines as line, i (i)}
-					<p class={line.kind}>
-						{#if line.kind === 'cmd'}<span class="prompt">mitanshu@indidino:~$</span>{/if}{line.text}
-					</p>
+					{#if line.run}
+						<p class={line.kind}>
+							<button class="runnable" onclick={() => exec(line.run!)}>{line.text}</button>
+						</p>
+					{:else}
+						<p class={line.kind}>
+							{#if line.kind === 'cmd'}<span class="prompt">mitanshu@portfolio:~$</span
+								>{/if}{line.text}
+						</p>
+					{/if}
 				{/each}
 
 				<form onsubmit={submit}>
-					<span class="prompt">mitanshu@indidino:~$</span>
+					<span class="prompt">mitanshu@portfolio:~$</span>
 					<input
 						bind:this={inputEl}
 						bind:value={input}
+						onkeydown={onInputKeydown}
 						spellcheck="false"
 						autocomplete="off"
 						autocapitalize="off"
 						aria-label="Terminal command"
 						placeholder={busy ? '' : 'help'}
 					/>
+					{#if ghost}<span class="ghost" aria-hidden="true">{ghost}</span>{/if}
 					<span class="cursor" aria-hidden="true"></span>
 				</form>
+			</div>
+
+			<div class="chips" role="toolbar" aria-label="Quick commands">
+				{#each SUGGESTIONS as s (s)}
+					<button class="cmd-chip" onclick={() => exec(s)} disabled={busy}>{s}</button>
+				{/each}
 			</div>
 		</div>
 	</div>
@@ -346,6 +412,67 @@
 
 	p.dim {
 		opacity: 0.5;
+	}
+
+	/* clickable output lines */
+	.runnable {
+		font: inherit;
+		color: inherit;
+		text-align: left;
+		white-space: pre-wrap;
+		word-break: break-word;
+		cursor: pointer;
+		transition: color 0.15s ease;
+	}
+
+	.runnable:hover {
+		color: var(--paper);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	p.ok .runnable:hover {
+		color: var(--signal);
+		filter: brightness(1.3);
+	}
+
+	/* ghost autosuggestion (accept with Tab or →) */
+	.ghost {
+		opacity: 0.35;
+		white-space: pre;
+	}
+
+	/* quick-command chips */
+	.chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		padding: 0.75rem 2vw 1rem;
+		border-top: 1px solid rgba(242, 240, 234, 0.2);
+	}
+
+	.cmd-chip {
+		font-family: var(--font-mono);
+		font-size: 12px;
+		letter-spacing: 0.04em;
+		color: var(--paper);
+		border: 1px solid rgba(242, 240, 234, 0.35);
+		border-radius: 999px;
+		padding: 0.3rem 0.85rem;
+		transition:
+			color 0.15s ease,
+			border-color 0.15s ease,
+			background 0.15s ease;
+	}
+
+	.cmd-chip:hover:not(:disabled) {
+		color: var(--ink);
+		background: var(--signal);
+		border-color: var(--signal);
+	}
+
+	.cmd-chip:disabled {
+		opacity: 0.4;
 	}
 
 	.prompt {

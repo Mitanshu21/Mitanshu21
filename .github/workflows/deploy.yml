@@ -28,9 +28,9 @@ jobs:
 
       - name: Build
         env:
-          # Serves the site at mitanshu21.github.io/<repo-name>.
-          # Remove this env var if the repo is ever renamed to mitanshu21.github.io.
-          BASE_PATH: /${{ github.event.repository.name }}
+          # User site (repo named *.github.io) serves at the domain root —
+          # no base path. A project repo would serve at /<repo-name>.
+          BASE_PATH: ${{ !endsWith(github.event.repository.name, '.github.io') && format('/{0}', github.event.repository.name) || '' }}
         run: npm run build
 
       # Publishing to the gh-pages branch auto-enables GitHub Pages —

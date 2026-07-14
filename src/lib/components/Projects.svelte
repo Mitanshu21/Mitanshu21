@@ -69,7 +69,7 @@
 	});
 </script>
 
-<section class="ink rule-top" id="work" data-numeral data-section="04 / 05 — WORK">
+<section class="ink rule-top" id="work" data-numeral data-section="04 / 06 — WORK">
 	<span class="numeral filled left" aria-hidden="true">04</span>
 
 	<header class="head broadsheet" use:rise>

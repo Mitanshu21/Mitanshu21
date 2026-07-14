@@ -6,12 +6,12 @@ import stars from './stars.json';
 
 export const profile = {
 	name: 'Mitanshu Patel',
-	role: 'Full-Stack Developer',
+	role: 'AI & Full-Stack Engineer',
 	est: 2021,
 	tagline: 'Software that feels instant.',
 	intro:
-		'I’m Mitanshu — a full-stack developer shipping end-to-end products in Svelte, React, Node.js and Python. I obsess over the milliseconds: this page carries less JavaScript than most cookie banners.',
-	email: 'mitanshu@indidino.com',
+		'I’m Mitanshu — an AI engineer who ships the whole stack: models, APIs and interfaces. The lab on this page is training a neural network in your browser right now — no server, no libraries, view source.',
+	email: 'mitanshu2531@gmail.com',
 	github: 'https://github.com/Mitanshu21',
 	githubHandle: 'GITHUB.COM/MITANSHU21',
 	// Add your LinkedIn URL to show the link, e.g. 'https://linkedin.com/in/...'
@@ -28,15 +28,17 @@ export const about = {
 		'Lately I’ve been deep in the Svelte ecosystem for its speed and simplicity, while shipping production work in React and Node. I like small bundles, fast first paints and code that the next developer can actually read.'
 	],
 	skills: [
-		{ group: 'Frontend', items: ['Svelte — SvelteKit', 'React', 'Next.js', 'TypeScript', 'Redux'] },
+		// TODO(Mitanshu): tune the AI/ML row to match your real experience
+		{ group: 'AI / ML', items: ['LLM integration', 'Python', 'Neural nets from scratch', 'Prompt engineering'] },
+		{ group: 'Frontend', items: ['Svelte — SvelteKit', 'React', 'Next.js', 'TypeScript'] },
 		{ group: 'Backend', items: ['Node — Express', 'Django', 'Python'] },
 		{ group: 'Data', items: ['MongoDB', 'MySQL', 'Firebase', 'AWS S3', 'Strapi'] },
 		{ group: 'Design', items: ['Figma', 'Design systems'] }
 	]
 };
 
-// TODO(Mitanshu): confirm the dates. Only real employment renders here —
-// never fake dates in a ruled ledger.
+// TODO(Mitanshu): entries below the first are DEMO placeholders —
+// replace roles, companies, dates and summaries with your real history.
 export const experience = [
 	{
 		role: 'Full Stack Developer',
@@ -46,6 +48,24 @@ export const experience = [
 		summary:
 			'Building and shipping full-stack products — React and Svelte frontends backed by Node.js services, MongoDB and AWS.',
 		highlights: ['React', 'Svelte', 'Node.js', 'MongoDB', 'AWS S3']
+	},
+	{
+		role: 'Frontend Developer',
+		company: 'Previous Company', // TODO: replace
+		period: '2022 — 2023', // TODO: replace
+		current: false,
+		summary:
+			'Built and maintained production React applications — component libraries, dashboards and client-facing features shipped on tight cycles.',
+		highlights: ['React', 'TypeScript', 'Redux', 'REST APIs']
+	},
+	{
+		role: 'Freelance Web Developer',
+		company: 'Self-Employed', // TODO: replace
+		period: '2021 — 2022', // TODO: replace
+		current: false,
+		summary:
+			'Took client projects end to end — landing pages, small web apps and CMS builds — owning everything from estimate to deploy.',
+		highlights: ['JavaScript', 'Node.js', 'MySQL', 'Firebase']
 	}
 ];
 
@@ -111,7 +131,8 @@ export const sections = [
 	{ id: 'about', num: '02', label: 'About', note: 'Who' },
 	{ id: 'experience', num: '03', label: 'Experience', note: 'Where' },
 	{ id: 'work', num: '04', label: 'Work', note: 'Proof' },
-	{ id: 'contact', num: '05', label: 'Contact', note: 'Talk' }
+	{ id: 'lab', num: '05', label: 'Lab', note: 'Live AI' },
+	{ id: 'contact', num: '06', label: 'Contact', note: 'Talk' }
 ];
 
 export const marqueeText = 'Software that feels instant — ';

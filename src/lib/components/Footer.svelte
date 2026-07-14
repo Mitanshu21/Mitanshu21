@@ -3,13 +3,14 @@
 	import Marquee from './Marquee.svelte';
 
 	// Keep in sync with the measured build output (gzipped JS total).
-	const JS_KB = 42;
+	const JS_KB = 46;
 
 	const receipt: [string, string][] = [
 		['JS SHIPPED', `${JS_KB} KB GZIP`],
 		['FONTS', '2 FAMILIES, SELF-HOSTED'],
 		['FRAMEWORK CSS', 'NONE'],
 		['TRACKING', 'NONE'],
+		['NEURAL NETS', 'HAND-ROLLED, 0 LIBRARIES'],
 		['X-FRAMEWORKS-CRIED-FOR', '0'],
 		['LIGHTHOUSE', 'GO ON, RUN IT'],
 		['BUILD', `${__BUILD_SHA__} · SVELTE 5 · GITHUB PAGES`]

@@ -6,24 +6,17 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # Creates/enables the Pages site (source: GitHub Actions) on first run
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/setup-node@v4
         with:
@@ -40,16 +33,9 @@ jobs:
           BASE_PATH: /${{ github.event.repository.name }}
         run: npm run build
 
-      - uses: actions/upload-pages-artifact@v3
+      # Publishing to the gh-pages branch auto-enables GitHub Pages —
+      # no repo-settings access needed.
+      - uses: peaceiris/actions-gh-pages@v4
         with:
-          path: build/
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build

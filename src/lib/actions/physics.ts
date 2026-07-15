@@ -46,72 +46,83 @@ function measureHome(b: PhysicsBody) {
 }
 
 function tick(now: number) {
-	const dt = Math.min(32, now - last) / 1000;
+	// fixed-timestep substeps: a long frame must NEVER destabilise the
+	// spring — a single dt spike once flung letters to x = -2^25
+	let dtms = Math.min(100, now - last);
 	last = now;
 	let active = false;
 
-	// springs
-	for (const b of bodies) {
-		if (b.grab !== null) {
-			active = true;
-			continue;
-		}
-		b.vx += (-K * b.x - C * b.vx) * dt;
-		b.vy += (-K * b.y - C * b.vy) * dt;
-		// extra brake near home — cascades must always die out
-		if (Math.abs(b.x) < 40 && Math.abs(b.y) < 40) {
-			b.vx *= 0.9;
-			b.vy *= 0.9;
-		}
-		b.x += b.vx * dt * 60;
-		b.y += b.vy * dt * 60;
-		if (
-			Math.abs(b.x) > 0.3 ||
-			Math.abs(b.y) > 0.3 ||
-			Math.abs(b.vx) > 0.3 ||
-			Math.abs(b.vy) > 0.3
-		) {
-			active = true;
-		} else {
-			b.x = b.y = b.vx = b.vy = 0;
-		}
-	}
-
-	// collisions — force applies only when two bodies get CLOSER than they
-	// naturally sit. Kerned letters overlap at rest by design, so resting
-	// (or merely held) letters exert nothing until something actually
-	// invades their space.
-	// "fast" means genuinely flying — settling wobble must never re-trigger
-	// collisions or the whole word oscillates forever
 	const energetic = (bd: PhysicsBody) =>
 		bd.grab !== null || Math.hypot(bd.vx, bd.vy) > 40;
 
-	for (let i = 0; i < bodies.length; i++) {
-		const a = bodies[i];
-		if (!a.home) measureHome(a);
-		for (let j = i + 1; j < bodies.length; j++) {
-			const b = bodies[j];
-			if (!b.home) measureHome(b);
-			if (!energetic(a) && !energetic(b)) continue;
-			const dx = b.home!.x + b.x - (a.home!.x + a.x);
-			const dy = b.home!.y + b.y - (a.home!.y + a.y);
-			const dist = Math.hypot(dx, dy) || 1;
-			const natural = Math.hypot(b.home!.x - a.home!.x, b.home!.y - a.home!.y);
-			const minDist = Math.min((a.r + b.r) * 0.72, natural * 0.85);
-			if (dist >= minDist) continue;
-			// capped, normalized impulse — bounded energy per frame per pair
-			const impulse = Math.min((minDist - dist) * 0.9, 30);
-			const nx = (dx / dist) * impulse;
-			const ny = (dy / dist) * impulse;
-			if (a.grab === null) {
-				a.vx -= nx;
-				a.vy -= ny;
+	while (dtms > 0) {
+		const dt = Math.min(16.7, dtms) / 1000;
+		dtms -= 16.7;
+
+		// springs
+		for (const b of bodies) {
+			if (b.grab !== null) {
+				active = true;
+				continue;
 			}
-			if (b.grab === null) {
-				b.vx += nx;
-				b.vy += ny;
+			b.vx += (-K * b.x - C * b.vx) * dt;
+			b.vy += (-K * b.y - C * b.vy) * dt;
+			// extra brake near home — cascades must always die out
+			if (Math.abs(b.x) < 40 && Math.abs(b.y) < 40) {
+				b.vx *= 0.9;
+				b.vy *= 0.9;
 			}
-			active = true;
+			b.x += b.vx * dt * 60;
+			b.y += b.vy * dt * 60;
+			// safety rails: purge NaN, clamp speed and displacement
+			if (!isFinite(b.x + b.y + b.vx + b.vy)) {
+				b.x = b.y = b.vx = b.vy = 0;
+			}
+			b.vx = Math.max(-250, Math.min(250, b.vx));
+			b.vy = Math.max(-250, Math.min(250, b.vy));
+			b.x = Math.max(-700, Math.min(700, b.x));
+			b.y = Math.max(-700, Math.min(700, b.y));
+			if (
+				Math.abs(b.x) > 0.3 ||
+				Math.abs(b.y) > 0.3 ||
+				Math.abs(b.vx) > 0.3 ||
+				Math.abs(b.vy) > 0.3
+			) {
+				active = true;
+			} else {
+				b.x = b.y = b.vx = b.vy = 0;
+			}
+		}
+
+		// collisions — force applies only when two bodies get CLOSER than
+		// they naturally sit; only fast-moving bodies exert force
+		for (let i = 0; i < bodies.length; i++) {
+			const a = bodies[i];
+			if (!a.home) measureHome(a);
+			for (let j = i + 1; j < bodies.length; j++) {
+				const b = bodies[j];
+				if (!b.home) measureHome(b);
+				if (!energetic(a) && !energetic(b)) continue;
+				const dx = b.home!.x + b.x - (a.home!.x + a.x);
+				const dy = b.home!.y + b.y - (a.home!.y + a.y);
+				const dist = Math.hypot(dx, dy) || 1;
+				const natural = Math.hypot(b.home!.x - a.home!.x, b.home!.y - a.home!.y);
+				const minDist = Math.min((a.r + b.r) * 0.72, natural * 0.85);
+				if (dist >= minDist) continue;
+				// capped, normalized impulse — bounded energy per substep per pair
+				const impulse = Math.min((minDist - dist) * 0.9, 30);
+				const nx = (dx / dist) * impulse;
+				const ny = (dy / dist) * impulse;
+				if (a.grab === null) {
+					a.vx -= nx;
+					a.vy -= ny;
+				}
+				if (b.grab === null) {
+					b.vx += nx;
+					b.vy += ny;
+				}
+				active = true;
+			}
 		}
 	}
 
@@ -179,8 +190,8 @@ export const physicsBody: Action<HTMLElement> = (node) => {
 		b.py = b.y;
 		b.x = e.clientX - b.gx;
 		b.y = e.clientY - b.gy;
-		b.vx = (b.x - b.px) * 3; // carry throw velocity
-		b.vy = (b.y - b.py) * 3;
+		b.vx = Math.max(-200, Math.min(200, (b.x - b.px) * 3)); // capped throw
+		b.vy = Math.max(-200, Math.min(200, (b.y - b.py) * 3));
 		wake();
 	}
 

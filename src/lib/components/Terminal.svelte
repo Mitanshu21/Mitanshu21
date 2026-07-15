@@ -29,7 +29,7 @@
 		'ping',
 		'sudo hire mitanshu'
 	];
-	const COMPLETIONS = [...SUGGESTIONS, 'help', 'goto lab', 'goto work', 'goto about', 'open 1', 'copy email', 'clear', 'exit'];
+	const COMPLETIONS = [...SUGGESTIONS, 'help', 'goto work', 'goto about', 'open 1', 'copy email', 'clear', 'exit'];
 	const history: string[] = [];
 	let histIdx = $state(-1);
 	const ghost = $derived.by(() => {
@@ -102,8 +102,8 @@
 		const q = query.toLowerCase();
 		if (/\b(ai|ml|llm|model|neural|machine learning)/.test(q))
 			return [
-				out('the lab on this page is training a neural net in your browser right now.'),
-				{ text: '  → goto lab', kind: 'ok', run: 'goto lab' }
+				out('neural nets by hand, LLMs in production — the record is in `experience`.'),
+				{ text: '  → experience', kind: 'ok', run: 'experience' }
 			];
 		if (/\b(svelte|react|node|python|django|mongo|stack|tech|skill)/.test(q))
 			return [out('yes — here is the full stack:'), ...stack()];

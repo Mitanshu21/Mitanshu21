@@ -1,288 +1,174 @@
 <script lang="ts">
-	import { projects } from '$lib/data';
+	import { projects, profile } from '$lib/data';
 	import { rise } from '$lib/actions/rise';
-
-	let open = $state(0); // row 1 ships pre-expanded
-	let sectionEl = $state<HTMLElement>();
-	let pill = $state<HTMLElement>();
-	let pillText = $state('OPEN +');
-	let pillVisible = $state(false);
-
-	function toggle(i: number) {
-		open = open === i ? -1 : i;
-		pillText = open === i ? 'CLOSE −' : 'OPEN +';
-	}
-
-	// Cursor-chasing pill — pointer:fine only, lerped at 0.15/frame.
-	$effect(() => {
-		if (!sectionEl || !pill || !matchMedia('(pointer: fine)').matches) return;
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-		const el = sectionEl;
-		const p = pill;
-		let tx = 0;
-		let ty = 0;
-		let x = 0;
-		let y = 0;
-		let raf = 0;
-
-		function loop() {
-			x += (tx - x) * 0.15;
-			y += (ty - y) * 0.15;
-			p.style.transform = `translate(${x - 45}px, ${y - 18}px)`;
-			// stop once converged and hidden — no idle 60fps loop
-			if (!pillVisible && Math.abs(tx - x) < 0.5 && Math.abs(ty - y) < 0.5) {
-				raf = 0;
-				return;
-			}
-			raf = requestAnimationFrame(loop);
-		}
-
-		function onMove(e: PointerEvent) {
-			tx = e.clientX;
-			ty = e.clientY;
-			const row = (e.target as HTMLElement).closest('.row-head');
-			pillVisible = !!row;
-			if (row) {
-				const i = Number((row as HTMLElement).dataset.index);
-				pillText = open === i ? 'CLOSE −' : 'OPEN +';
-			}
-			if (!raf) {
-				x = tx;
-				y = ty;
-				raf = requestAnimationFrame(loop);
-			}
-		}
-
-		function onLeave() {
-			pillVisible = false;
-			cancelAnimationFrame(raf);
-			raf = 0;
-		}
-
-		el.addEventListener('pointermove', onMove);
-		el.addEventListener('pointerleave', onLeave);
-		return () => {
-			cancelAnimationFrame(raf);
-			el.removeEventListener('pointermove', onMove);
-			el.removeEventListener('pointerleave', onLeave);
-		};
-	});
 </script>
 
-<section class="ink rule-top" id="work" data-numeral data-section="04 / 06 — WORK">
-	<span class="numeral filled left" aria-hidden="true">04</span>
+<section class="ink rule-top" id="work" data-numeral data-section="05 / 06 — WORK">
+	<span class="numeral filled left" aria-hidden="true">05</span>
 
-	<header class="head broadsheet" use:rise>
-		<h2 class="v-display outlined">SELECTED WORK</h2>
-		<p class="v-mono-s note">{String(projects.length).padStart(2, '0')} REPOS / PUBLIC / OPEN SOURCE</p>
-	</header>
-
-	<div class="rows">
-		{#each projects as project, i (project.repo)}
-			<article class="rule-row" class:open={open === i} use:rise={{ delay: (i % 3) * 70 }}>
-				<button
-					class="row-head"
-					data-index={i}
-					aria-expanded={open === i}
-					aria-controls="proj-{i}"
-					onclick={() => toggle(i)}
-				>
-					<span class="index v-mono">{String(i + 1).padStart(2, '0')}</span>
-					<span class="title v-display">{project.title.toUpperCase()}</span>
-					<span class="meta v-mono-s">
-						{project.tech.join(' / ').toUpperCase()}{project.stars > 0
-							? `  ·  ★ ${project.stars}`
-							: ''}
-						<span class="glyph" aria-hidden="true">{open === i ? '−' : '+'}</span>
-					</span>
-				</button>
-
-				<div class="panel" id="proj-{i}" inert={open !== i}>
-					<div class="panel-inner broadsheet">
-						<p class="desc v-body">{project.description}</p>
-						<p class="links v-mono">
-							<a href={project.github} target="_blank" rel="noopener noreferrer">GITHUB ↗</a>
-							{#if project.live}
-								<a href={project.live} target="_blank" rel="noopener noreferrer">LIVE ↗</a>
-							{/if}
-						</p>
-					</div>
-				</div>
-			</article>
-		{/each}
+	<div class="head broadsheet" use:rise>
+		<p class="section-label">05 — Selected work</p>
+		<p class="note v-mono-s">
+			{String(projects.length).padStart(2, '0')} REPOS · PUBLIC · OPEN SOURCE
+		</p>
 	</div>
-</section>
 
-<div class="pill v-mono-s" class:visible={pillVisible} bind:this={pill} aria-hidden="true">
-	{pillText}
-</div>
+	<ol class="rows">
+		{#each projects as project, i (project.repo)}
+			<li class="broadsheet" use:rise={{ delay: (i % 3) * 80 }}>
+				<div class="num-cell">
+					<p class="idx v-mono">{String(i + 1).padStart(2, '0')}</p>
+					{#if project.stars > 0}
+						<p class="stars v-mono-s">★ {project.stars}</p>
+					{/if}
+				</div>
+				<div class="body-cell">
+					<h3 class="v-display">{project.title.toUpperCase()}</h3>
+					<p class="desc v-body">{project.description}</p>
+					<p class="meta v-mono-s">
+						{#each project.tech as tag (tag)}
+							<span class="chip">{tag.toUpperCase()}</span>
+						{/each}
+						<a class="lnk" href={project.github} target="_blank" rel="noopener noreferrer"
+							>GITHUB ↗</a
+						>
+						{#if project.live}
+							<a class="lnk" href={project.live} target="_blank" rel="noopener noreferrer"
+								>LIVE DEMO ↗</a
+							>
+						{/if}
+					</p>
+				</div>
+			</li>
+		{/each}
+	</ol>
+
+	<p class="more v-mono-s broadsheet" use:rise>
+		<span class="more-inner"
+			>FULL ARCHIVE ON <a href={profile.github} target="_blank" rel="noopener noreferrer"
+				>GITHUB ↗</a
+			></span
+		>
+	</p>
+</section>
 
 <style>
 	section {
 		padding-top: clamp(6rem, 14vh, 12rem);
-		padding-bottom: 4rem;
+		padding-bottom: 3.5rem;
 	}
 
 	.head {
-		align-items: baseline;
-		margin-bottom: 3rem;
 		position: relative;
 		z-index: 1;
+		align-items: baseline;
+		margin-bottom: 2rem;
 	}
 
-	h2 {
-		grid-column: 1 / 10;
-		font-size: clamp(44px, 10vw, 200px);
-		-webkit-text-stroke-color: var(--paper);
+	.head .section-label {
+		grid-column: 1 / 8;
 	}
 
 	.note {
-		grid-column: 10 / 13;
+		grid-column: 8 / 13;
 		text-align: right;
-		align-self: end;
+		opacity: 0.6;
 	}
 
 	.rows {
+		list-style: none;
 		position: relative;
 		z-index: 1;
 	}
 
-	article {
-		border-top: 1px solid var(--paper);
+	li {
+		padding-block: 2.25rem;
+		border-top: 1px solid rgba(242, 240, 234, 0.25);
 	}
 
-	article:last-child {
-		border-bottom: 1px solid var(--paper);
+	.num-cell {
+		grid-column: 1 / 4;
 	}
 
-	.row-head {
-		display: grid;
-		grid-template-columns: minmax(48px, 6vw) 1fr auto;
-		align-items: baseline;
-		gap: 2vw;
-		width: 100%;
-		text-align: left;
-		padding: 1.4rem 2vw;
-		cursor: pointer;
-	}
-
-	.title {
-		font-size: clamp(28px, 6vw, 110px);
-		transition: color 0.15s ease;
-	}
-
-	.row-head:hover .title,
-	.row-head:focus-visible .title,
-	.open .title {
+	.idx {
+		font-weight: 700;
 		color: var(--signal);
 	}
 
-	.meta {
-		white-space: nowrap;
+	.stars {
+		margin-top: 0.3rem;
 		opacity: 0.7;
 	}
 
-	.glyph {
-		display: inline-block;
-		margin-left: 1.5rem;
-		opacity: 1;
+	.body-cell {
+		grid-column: 4 / 12;
 	}
 
-	/* accordion — grid-template-rows 0fr → 1fr */
-	.panel {
-		display: grid;
-		grid-template-rows: 0fr;
-		transition: grid-template-rows 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+	h3 {
+		font-size: clamp(26px, 3.6vw, 56px);
+		margin-bottom: 0.75rem;
+		transition: color 0.15s ease;
 	}
 
-	.open .panel {
-		grid-template-rows: 1fr;
-	}
-
-	.panel-inner {
-		overflow: clip;
+	li:hover h3 {
+		color: var(--signal);
 	}
 
 	.desc {
-		grid-column: 3 / 9;
-		padding-bottom: 2rem;
+		max-width: 58ch;
+		color: color-mix(in srgb, var(--paper) 78%, transparent);
+		margin-bottom: 1rem;
 	}
 
-	.links {
-		grid-column: 9 / 13;
+	.meta {
 		display: flex;
-		gap: 2.5rem;
-		justify-content: flex-end;
-		align-items: start;
+		gap: 0.5rem 0.6rem;
+		flex-wrap: wrap;
+		align-items: center;
 	}
 
-	.links a {
-		border-bottom: 1px solid var(--paper);
-		padding-bottom: 2px;
-		transition:
-			color 0.15s ease,
-			border-color 0.15s ease;
+	.chip {
+		border: 1px solid rgba(242, 240, 234, 0.4);
+		border-radius: 99px;
+		padding: 0.15rem 0.65rem;
 	}
 
-	.links a:hover {
+	.lnk {
+		margin-left: 0.75rem;
 		color: var(--signal);
-		border-color: var(--signal);
+		font-weight: 700;
+		border-bottom: 1px solid var(--signal);
+		padding-bottom: 1px;
 	}
 
-	/* cursor pill */
-	.pill {
-		position: fixed;
-		top: 0;
-		left: 0;
-		z-index: 45;
-		width: 90px;
-		height: 36px;
-		display: grid;
-		place-items: center;
-		background: var(--paper);
-		color: var(--ink);
-		border-radius: 999px;
-		pointer-events: none;
-		opacity: 0;
-		transition: opacity 0.15s ease;
+	.lnk:hover {
+		color: var(--paper);
+		border-color: var(--paper);
 	}
 
-	.pill.visible {
-		opacity: 1;
+	.more {
+		margin-top: 2.5rem;
+	}
+
+	.more-inner {
+		grid-column: 4 / 12;
+		opacity: 0.7;
+	}
+
+	.more a {
+		color: var(--signal);
 	}
 
 	@media (max-width: 768px) {
-		h2 {
+		.num-cell {
 			grid-column: 1 / -1;
+			display: flex;
+			gap: 1rem;
+			align-items: baseline;
 		}
-		.note {
+		.body-cell {
 			grid-column: 1 / -1;
-			text-align: left;
-		}
-		.row-head {
-			grid-template-columns: 1fr;
-			gap: 0.3rem;
-			padding-block: 1.1rem;
-		}
-		.index {
-			display: none;
-		}
-		.desc {
-			grid-column: 1 / -1;
-		}
-		.links {
-			grid-column: 1 / -1;
-			justify-content: flex-start;
-			padding-bottom: 1.5rem;
-		}
-		.pill {
-			display: none;
-		}
-	}
-
-	@media (pointer: coarse), (prefers-reduced-motion: reduce) {
-		.pill {
-			display: none;
+			margin-top: 0.5rem;
 		}
 	}
 </style>

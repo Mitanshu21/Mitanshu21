@@ -7,11 +7,16 @@
 	<span class="numeral left" aria-hidden="true">02</span>
 	<h2 class="sr-only">About</h2>
 
+	<div class="head broadsheet" use:rise>
+		<p class="section-label">02 — About</p>
+		<p class="note v-mono-s">AI & FULL-STACK · EST. 2021</p>
+	</div>
+
 	<div class="broadsheet body">
 		<p class="lede v-lede" use:rise>
 			I’m Mitanshu — an AI engineer who ships the whole stack: models, APIs and interfaces.
-			The lab on this page is <mark>training a neural network in your browser</mark> right
-			now — and the whole site still carries <mark>less JavaScript than a cookie banner</mark>.
+			I obsess over the <mark>milliseconds</mark>: this whole page carries
+			<mark>less JavaScript than most cookie banners</mark>.
 		</p>
 
 		<div class="prose" use:rise={{ delay: 80 }}>
@@ -32,6 +37,23 @@
 </section>
 
 <style>
+	.head {
+		position: relative;
+		z-index: 1;
+		align-items: baseline;
+		margin-bottom: 2rem;
+	}
+
+	.head .section-label {
+		grid-column: 1 / 8;
+	}
+
+	.note {
+		grid-column: 8 / 13;
+		text-align: right;
+		opacity: 0.6;
+	}
+
 	section {
 		padding-top: clamp(6rem, 14vh, 12rem);
 	}

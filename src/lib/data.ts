@@ -10,7 +10,7 @@ export const profile = {
 	est: 2021,
 	tagline: 'Software that feels instant.',
 	intro:
-		'I’m Mitanshu — an AI engineer who ships the whole stack: models, APIs and interfaces. The lab on this page is training a neural network in your browser right now — no server, no libraries, view source.',
+		'I’m Mitanshu — an AI engineer who ships the whole stack: models, APIs and interfaces. Even this page is hand-written down to its physics — grab the headline, or flip the brush and paint on it.',
 	email: 'mitanshu2531@gmail.com',
 	github: 'https://github.com/Mitanshu21',
 	githubHandle: 'GITHUB.COM/MITANSHU21',
@@ -127,12 +127,60 @@ export const projects = [
 ].map((p) => ({ ...p, stars: (stars as Record<string, number>)[p.repo] ?? 0 }));
 
 export const sections = [
-	{ id: 'top', num: '01', label: 'Index', note: '' },
+	{ id: 'top', num: '01', label: 'Index', note: 'Wet brush lives here' },
 	{ id: 'about', num: '02', label: 'About', note: 'Who' },
-	{ id: 'experience', num: '03', label: 'Experience', note: 'Where' },
-	{ id: 'work', num: '04', label: 'Work', note: 'Proof' },
-	{ id: 'lab', num: '05', label: 'Lab', note: 'Live AI' },
+	{ id: 'evolution', num: '03', label: 'Evolution', note: 'Level up' },
+	{ id: 'experience', num: '04', label: 'Experience', note: 'Where' },
+	{ id: 'work', num: '05', label: 'Work', note: 'Proof' },
 	{ id: 'contact', num: '06', label: 'Contact', note: 'Talk' }
+];
+
+// 04 — EVOLUTION: the character progression screen.
+// TODO(Mitanshu): dates and stories for LV.2-LV.4 are best guesses — correct them.
+export const evolution = [
+	{
+		lv: 1,
+		year: '2021',
+		title: 'Spawn point',
+		story: 'First commit pushed to GitHub. HTML, CSS and vanilla JS — the starter kit.',
+		unlocked: ['HTML/CSS', 'JavaScript', 'Git']
+	},
+	{
+		lv: 2,
+		year: '2021 — 2022',
+		title: 'Freelance quests',
+		story: 'First real clients, first real deadlines. Landing pages, small apps and CMS builds — shipped end to end, alone.',
+		unlocked: ['React', 'Node.js', 'MySQL', 'Client diplomacy']
+	},
+	{
+		lv: 3,
+		year: '2022 — 2023',
+		title: 'Production arc',
+		story: 'Production React applications — component libraries, dashboards, tight release cycles.',
+		unlocked: ['TypeScript', 'Redux', 'REST APIs']
+	},
+	{
+		lv: 4,
+		year: '2023',
+		title: 'Full-stack class change',
+		story: 'Joined Indidino. Owning features from database schema to final pixel.',
+		unlocked: ['MongoDB', 'AWS S3', 'Django']
+	},
+	{
+		lv: 5,
+		year: '2024 — 2025',
+		title: 'Weapon of choice',
+		story: 'Discovered Svelte and never looked back — speed became the whole point.',
+		unlocked: ['Svelte', 'SvelteKit', 'Performance obsession']
+	},
+	{
+		lv: 6,
+		year: '2025 — NOW',
+		title: 'The AI arc',
+		story: 'Neural nets written by hand, LLMs in production — shipping intelligence, not demos.',
+		unlocked: ['Backprop by hand', 'LLM integration', 'Python ML'],
+		current: true
+	}
 ];
 
 export const marqueeText = 'Software that feels instant — ';

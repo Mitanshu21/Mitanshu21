@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Hero from '$lib/components/Hero.svelte';
 	import About from '$lib/components/About.svelte';
+	import Evolution from '$lib/components/Evolution.svelte';
 	import Experience from '$lib/components/Experience.svelte';
 	import Projects from '$lib/components/Projects.svelte';
-	import AiLab from '$lib/components/AiLab.svelte';
 	import Contact from '$lib/components/Contact.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Terminal from '$lib/components/Terminal.svelte';
@@ -50,9 +50,9 @@
 <main id="main">
 	<Hero />
 	<About />
+	<Evolution />
 	<Experience />
 	<Projects />
-	<AiLab />
 	<Contact />
 </main>
 <Footer />

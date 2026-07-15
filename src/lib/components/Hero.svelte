@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { profile, marqueeText } from '$lib/data';
+	import { profile } from '$lib/data';
 	import { ui } from '$lib/ui.svelte';
 	import { physicsBody, onHeadlineGrab } from '$lib/actions/physics';
 	import { magnetic } from '$lib/actions/magnetic';
-	import Marquee from './Marquee.svelte';
+	import type { Component } from 'svelte';
 
 	// Prerendered fallback copy is replaced by the real on-device measurement.
 	let loadedLine = $state('LOADED IN 0.2S — PRERENDERED, NOTHING TO WAIT FOR.');
@@ -11,6 +11,18 @@
 	// undocumented: the name is grabbable. The quips only exist for
 	// visitors who discover that on their own.
 	let quip = $state('');
+	// the wet brush: opt-in fluid ink painted over the hero itself.
+	// The WebGL engine is lazy-loaded on first toggle — zero cost until used.
+	let brush = $state(false);
+	let clearTick = $state(0);
+	let WetBrushC = $state<Component<{ active?: boolean; clearSignal?: number }> | null>(null);
+
+	async function toggleBrush() {
+		brush = !brush;
+		if (brush && !WetBrushC) {
+			WetBrushC = (await import('./WetBrush.svelte')).default;
+		}
+	}
 	// masks clip the intro rise, then release so thrown letters aren't chopped
 	let played = $state(false);
 
@@ -103,6 +115,13 @@
 						>TAP ⌘K, BOTTOM RIGHT</span
 					></span>
 			</div>
+			<div class="row">
+				<span>BRUSH</span><span
+					><button class="brush-btn" onclick={toggleBrush}
+						>{brush ? '● WET INK — PAINTING' : '○ WET INK — TRY IT'}</button
+					></span
+				>
+			</div>
 			{#if quip}
 				{#key quip}
 					<p class="drag-hint">{quip}</p>
@@ -117,19 +136,28 @@
 		<p class="scroll-cue v-mono-s" aria-hidden="true">SCROLL ↓</p>
 	</div>
 
-	<div class="strip rule-top">
-		<Marquee text={marqueeText.toUpperCase()} alternate />
-	</div>
+	{#if WetBrushC}
+		<WetBrushC active={brush} clearSignal={clearTick} />
+	{/if}
+
+	{#if brush}
+		<div class="brush-bar v-mono-s">
+			<span class="lbl">WET INK — NAVIER–STOKES, HAND-WRITTEN · PAINT ANYWHERE · HOLD STILL, IT BLEEDS ORANGE</span>
+			<button onclick={() => (clearTick += 1)}>CLEAR ↺</button>
+			<button onclick={() => (brush = false)}>EXIT ✕</button>
+		</div>
+	{/if}
 </section>
 
 <style>
 	.hero {
+		position: relative;
 		min-height: 100svh;
 		display: grid;
 		/* minmax(0,1fr): the marquee's max-content width must not
 		   inflate the grid — it once stretched the hero to 10,000px+ */
 		grid-template-columns: minmax(0, 1fr);
-		grid-template-rows: auto 1fr auto;
+		grid-template-rows: auto 1fr;
 		overflow: clip;
 	}
 
@@ -352,11 +380,6 @@
 		bottom: 3.5rem;
 		right: 1rem;
 		writing-mode: vertical-rl;
-	}
-
-	/* ── marquee strip ── */
-	.strip {
-		border-bottom: 1px solid var(--ink);
 	}
 
 	@media (max-width: 768px) {

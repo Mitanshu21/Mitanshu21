@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { profile, marqueeText } from '$lib/data';
-	import Marquee from './Marquee.svelte';
+	import { profile } from '$lib/data';
 
 	// Keep in sync with the measured build output (gzipped JS total).
-	const JS_KB = 46;
+	const JS_KB = 43;
 
 	const receipt: [string, string][] = [
-		['JS SHIPPED', `${JS_KB} KB GZIP`],
+		['JS SHIPPED', `${JS_KB} KB GZIP — FLUID ENGINE LAZY-LOADED`],
 		['FONTS', '2 FAMILIES, SELF-HOSTED'],
 		['FRAMEWORK CSS', 'NONE'],
 		['TRACKING', 'NONE'],
-		['NEURAL NETS', 'HAND-ROLLED, 0 LIBRARIES'],
+		['FLUID SIM', 'HAND-ROLLED NAVIER–STOKES'],
 		['X-FRAMEWORKS-CRIED-FOR', '0'],
 		['LIGHTHOUSE', 'GO ON, RUN IT'],
 		['BUILD', `${__BUILD_SHA__} · SVELTE 5 · GITHUB PAGES`]
@@ -38,9 +37,6 @@
 		</dl>
 	</div>
 
-	<div class="strip rule-top">
-		<Marquee text={marqueeText.toUpperCase()} reverse alternate duration={30} />
-	</div>
 </footer>
 
 <style>

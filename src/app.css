@@ -257,36 +257,6 @@ section[data-numeral] {
 	}
 }
 
-/* ── Marquee (CSS only, duplicated aria-hidden track) ──────── */
-.marquee {
-	display: flex;
-	overflow: clip;
-	white-space: nowrap;
-	user-select: none;
-}
-
-.marquee .track {
-	display: flex;
-	flex-shrink: 0;
-	min-width: 100%;
-	animation: marquee var(--marquee-dur, 22s) linear infinite;
-}
-
-.marquee:hover .track,
-.marquee:focus-within .track {
-	animation-play-state: paused;
-}
-
-.marquee.reverse .track {
-	animation-direction: reverse;
-}
-
-@keyframes marquee {
-	to {
-		transform: translateX(-100%);
-	}
-}
-
 /* ── Scroll entrances (Apple-style rise) ───────────────────── */
 /* hidden state exists only under html.js — content never gates on JS */
 html.js .rise {
@@ -317,12 +287,6 @@ html.js .rise.in {
 	}
 	.numeral {
 		transform: none;
-	}
-	.marquee .track {
-		animation: none;
-	}
-	.marquee .track[aria-hidden] {
-		display: none;
 	}
 	*,
 	*::before,

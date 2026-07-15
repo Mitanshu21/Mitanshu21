@@ -3,89 +3,92 @@
 	import { rise } from '$lib/actions/rise';
 </script>
 
-<section class="rule-top" id="experience" data-numeral data-section="03 / 06 — EXPERIENCE">
-	<span class="numeral right" aria-hidden="true">03</span>
+<section class="rule-top" id="experience" data-numeral data-section="04 / 06 — EXPERIENCE">
+	<span class="numeral right" aria-hidden="true">04</span>
 	<h2 class="sr-only">Experience</h2>
 
-	{#each experience as job (job.company + job.period)}
-		<article class="row rule-top broadsheet" use:rise>
-			<p class="period v-mono-s">{job.period.toUpperCase()}</p>
-			<div class="role-cell">
-				<h3 class="v-display">
-					{job.role.toUpperCase()} — <span class="outlined">{job.company.toUpperCase()}</span>
-				</h3>
-				<p class="highlights v-mono-s">{job.highlights.join(' / ').toUpperCase()}</p>
-			</div>
-			<div class="side">
-				<p class="v-body summary">{job.summary}</p>
-				<p class="status v-mono-s" class:running={job.current}>
-					{#if job.current}<i class="dot" aria-hidden="true"></i> RUNNING{:else}EXITED 0{/if}
-				</p>
-			</div>
-		</article>
-	{/each}
+	<div class="head broadsheet" use:rise>
+		<p class="section-label">04 — Experience</p>
+		<p class="note v-mono-s">DEPLOYMENT RECORD · NO UNPLANNED DOWNTIME</p>
+	</div>
+
+	<ol class="jobs">
+		{#each experience as job, i (job.company + job.period)}
+			<li class="broadsheet" class:current={job.current} use:rise={{ delay: (i % 3) * 80 }}>
+				<div class="when-cell">
+					<p class="period v-mono">{job.period.toUpperCase()}</p>
+					<p class="status v-mono-s">
+						{#if job.current}<span class="dot" aria-hidden="true"></span> RUNNING{:else}EXITED
+							0{/if}
+					</p>
+				</div>
+				<div class="body-cell">
+					<h3 class="v-display">
+						{job.role.toUpperCase()} <span class="at">·</span>
+						{job.company.toUpperCase()}
+					</h3>
+					<p class="summary v-body">{job.summary}</p>
+					<p class="stack v-mono-s">
+						STACK:
+						{#each job.highlights as tag (tag)}
+							<span class="chip">{tag.toUpperCase()}</span>
+						{/each}
+					</p>
+				</div>
+			</li>
+		{/each}
+	</ol>
 </section>
 
 <style>
 	section {
 		padding-top: clamp(6rem, 14vh, 12rem);
+		padding-bottom: 3rem;
 	}
 
-	.row {
-		grid-template-rows: auto;
-		align-items: start;
-		padding-block: 2.5rem;
+	.head {
 		position: relative;
 		z-index: 1;
-		transition:
-			background 0.15s ease,
-			color 0.15s ease;
+		align-items: baseline;
+		margin-bottom: 2rem;
 	}
 
-	.row:hover {
-		background: var(--ink);
-		color: var(--paper);
+	.head .section-label {
+		grid-column: 1 / 8;
 	}
 
-	.row:hover .outlined {
-		-webkit-text-stroke-color: var(--paper);
+	.note {
+		grid-column: 8 / 13;
+		text-align: right;
+		opacity: 0.6;
+	}
+
+	.jobs {
+		list-style: none;
+		position: relative;
+		z-index: 1;
+	}
+
+	li {
+		padding-block: 2.25rem;
+		border-top: 1px solid var(--line);
+	}
+
+	.when-cell {
+		grid-column: 1 / 4;
 	}
 
 	.period {
-		grid-column: 1 / 3;
-		padding-top: 0.5rem;
-	}
-
-	.role-cell {
-		grid-column: 3 / 10;
-	}
-
-	h3 {
-		font-size: clamp(32px, 5vw, 88px);
-	}
-
-	.highlights {
-		margin-top: 1rem;
-		opacity: 0.7;
-	}
-
-	.side {
-		grid-column: 10 / 13;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.summary {
-		font-size: 14px;
+		font-weight: 700;
+		color: var(--signal);
 	}
 
 	.status {
-		text-align: right;
-		opacity: 0.45;
+		margin-top: 0.3rem;
+		opacity: 0.55;
 	}
 
-	.status.running {
+	li.current .status {
 		opacity: 1;
 	}
 
@@ -104,17 +107,54 @@
 		}
 	}
 
+	.body-cell {
+		grid-column: 4 / 12;
+	}
+
+	h3 {
+		font-size: clamp(26px, 3.6vw, 56px);
+		margin-bottom: 0.75rem;
+	}
+
+	.at {
+		color: var(--signal);
+	}
+
+	.summary {
+		max-width: 58ch;
+		color: color-mix(in srgb, var(--ink) 78%, transparent);
+		margin-bottom: 1rem;
+	}
+
+	.stack {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		align-items: center;
+		opacity: 0.9;
+	}
+
+	.chip {
+		border: 1px solid var(--ink);
+		border-radius: 99px;
+		padding: 0.15rem 0.65rem;
+	}
+
+	li.current .chip {
+		border-color: var(--signal);
+		color: var(--signal);
+	}
+
 	@media (max-width: 768px) {
-		.period,
-		.role-cell,
-		.side {
+		.when-cell {
 			grid-column: 1 / -1;
+			display: flex;
+			gap: 1rem;
+			align-items: baseline;
 		}
-		.side {
-			margin-top: 1rem;
-		}
-		.status {
-			text-align: left;
+		.body-cell {
+			grid-column: 1 / -1;
+			margin-top: 0.5rem;
 		}
 	}
 </style>

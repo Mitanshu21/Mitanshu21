@@ -22,6 +22,11 @@
 	<span class="numeral right" aria-hidden="true">06</span>
 	<h2 class="sr-only">Contact</h2>
 
+	<div class="head broadsheet" use:rise>
+		<p class="section-label">06 — Contact</p>
+		<p class="note v-mono-s">INBOX OPEN · REPLIES FAST</p>
+	</div>
+
 	<div class="inner">
 		<p class="kicker v-mono" use:rise>HAVE SOMETHING THAT NEEDS TO FEEL INSTANT?</p>
 
@@ -58,6 +63,23 @@
 </section>
 
 <style>
+	.head {
+		position: relative;
+		z-index: 1;
+		align-items: baseline;
+		margin-bottom: 1rem;
+	}
+
+	.head .section-label {
+		grid-column: 1 / 8;
+	}
+
+	.note {
+		grid-column: 8 / 13;
+		text-align: right;
+		opacity: 0.6;
+	}
+
 	section {
 		min-height: 70svh;
 		display: grid;

@@ -1,17 +1,16 @@
 // ─────────────────────────────────────────────────────────────
 // All site content lives here. Edit this file — nothing else —
-// to change what the datasheet says.
+// to change what the portfolio says.
 // ─────────────────────────────────────────────────────────────
 import stars from './stars.json';
 
 export const profile = {
 	name: 'Mitanshu Patel',
-	part: 'MITANSHU-21',
 	role: 'AI & Full-Stack Engineer',
 	est: 2021,
-	tagline: 'A human, documented like hardware.',
-	shortDesc:
-		'General-purpose AI & full-stack engineer. Ships models, APIs and interfaces end to end. Low latency, high reliability, self-documenting.',
+	tagline: 'Software that feels instant.',
+	intro:
+		'I’m Mitanshu — an AI engineer who ships the whole stack: models, APIs and interfaces. The lab on this page is training a neural network in your browser right now — no server, no libraries, view source.',
 	email: 'mitanshu2531@gmail.com',
 	github: 'https://github.com/Mitanshu21',
 	githubHandle: 'GITHUB.COM/MITANSHU21',
@@ -20,41 +19,7 @@ export const profile = {
 	// Drop resume.pdf into /static and set this to 'resume.pdf' to show the link
 	resume: '',
 	available: true,
-	availabilityNote: 'In production — open to work'
-};
-
-export const features = [
-	'Full-stack: Svelte, React, Node.js, Python — one package',
-	'On-device AI demos included (see §4, Characteristic Curves)',
-	'39★ open-source track record, 68 forks in the field',
-	'Sub-second render targets on all interfaces',
-	'LLM-integration ready, prompt-tolerant',
-	'Self-hosting, self-documenting, self-deprecating'
-];
-
-export const applications = [
-	'Startups shipping their first product',
-	'AI features that need to reach production',
-	'Dashboards, admin tools, internal platforms',
-	'CMS builds and content pipelines',
-	'Freelance rescues of stalled codebases'
-];
-
-// ABSOLUTE MAXIMUM RATINGS — exceeding these may impair reliability
-export const maxRatings = [
-	{ param: 'Consecutive meetings', symbol: 'N(MTG)', value: '3', unit: 'meetings' },
-	{ param: 'Caffeine intake', symbol: 'C(MAX)', value: '400', unit: 'mg/day' },
-	{ param: 'Scope creep tolerance', symbol: 'S(CRP)', value: '15', unit: '%/sprint' },
-	{ param: 'Time to first commit', symbol: 't(FC)', value: '24', unit: 'h' },
-	{ param: 'JavaScript shipped per page', symbol: 'JS(MAX)', value: '50', unit: 'kB gzip' }
-];
-
-// §1 GENERAL DESCRIPTION at three sampling temperatures.
-// The visitor drags the dial; the text re-samples.
-export const bioVariants = {
-	low: 'MITANSHU-21 is a versatile engineering unit designed for end-to-end software delivery. The device integrates model-layer, API-layer and interface-layer processing in a single package, and has been validated in production environments since 2021. Typical applications include AI-enabled products, dashboards and content platforms. Contact sales for volume enquiries.',
-	mid: 'I’m Mitanshu — an AI engineer who ships the whole stack: models, APIs and interfaces. The curves in §4 aren’t stock photos; they’re neural networks training in your browser right now, with backprop I wrote by hand. I like small bundles, fast first paints and code the next engineer can actually read.',
-	high: 'ok so imagine a guy who thinks cold starts are a personal insult. that’s me. i write backprop for FUN. i have opinions about kerning. my neural nets live in YOUR browser rent-free. svelte chose ME. somewhere out there a cookie banner is shipping more javascript than this entire website and honestly? unforgivable. hire me before the temperature goes higher.'
+	availabilityNote: 'Open to work'
 };
 
 export const about = {
@@ -64,10 +29,7 @@ export const about = {
 	],
 	skills: [
 		// TODO(Mitanshu): tune the AI/ML row to match your real experience
-		{
-			group: 'AI / ML',
-			items: ['LLM integration', 'Python', 'Neural nets from scratch', 'Prompt engineering']
-		},
+		{ group: 'AI / ML', items: ['LLM integration', 'Python', 'Neural nets from scratch', 'Prompt engineering'] },
 		{ group: 'Frontend', items: ['Svelte — SvelteKit', 'React', 'Next.js', 'TypeScript'] },
 		{ group: 'Backend', items: ['Node — Express', 'Django', 'Python'] },
 		{ group: 'Data', items: ['MongoDB', 'MySQL', 'Firebase', 'AWS S3', 'Strapi'] },
@@ -75,7 +37,6 @@ export const about = {
 	]
 };
 
-// §5 OPERATING HISTORY
 // TODO(Mitanshu): entries below the first are DEMO placeholders —
 // replace roles, companies, dates and summaries with your real history.
 export const experience = [
@@ -108,7 +69,6 @@ export const experience = [
 	}
 ];
 
-// §3 BENCHMARKS
 export const projects = [
 	{
 		title: 'React Calculator',
@@ -166,22 +126,13 @@ export const projects = [
 	}
 ].map((p) => ({ ...p, stars: (stars as Record<string, number>)[p.repo] ?? 0 }));
 
-// table of contents / section registry
 export const sections = [
-	{ id: 'top', num: '0', label: 'Cover', note: 'Part summary' },
-	{ id: 'description', num: '1', label: 'General Description', note: 'Adjustable temperature' },
-	{ id: 'diagram', num: '2', label: 'Block Diagram', note: 'Functional' },
-	{ id: 'work', num: '3', label: 'Benchmarks', note: 'Shipped & measured' },
-	{ id: 'lab', num: '4', label: 'Characteristic Curves', note: 'Live, in-browser' },
-	{ id: 'experience', num: '5', label: 'Operating History', note: 'Field record' },
-	{ id: 'contact', num: '6', label: 'Application Circuit', note: 'How to connect' }
+	{ id: 'top', num: '01', label: 'Index', note: '' },
+	{ id: 'about', num: '02', label: 'About', note: 'Who' },
+	{ id: 'experience', num: '03', label: 'Experience', note: 'Where' },
+	{ id: 'work', num: '04', label: 'Work', note: 'Proof' },
+	{ id: 'lab', num: '05', label: 'Lab', note: 'Live AI' },
+	{ id: 'contact', num: '06', label: 'Contact', note: 'Talk' }
 ];
 
-// footer REVISION HISTORY (newest first) — keep honest, keep short
-export const revisions = [
-	{ rev: '4.0', date: '2026-07', change: 'Complete redesign — the datasheet. You are reading it.' },
-	{ rev: '3.0', date: '2026-07', change: 'Editorial broadsheet, headline physics, the lab, ⌘K console.' },
-	{ rev: '2.0', date: '2026-07', change: 'Dark neural-canvas concept. Rejected: looked like a template.' },
-	{ rev: '1.0', date: '2026-07', change: 'First SvelteKit build.' },
-	{ rev: '0.1', date: '2021', change: 'Initial silicon: first commit to GitHub.' }
-];
+export const marqueeText = 'Software that feels instant — ';
